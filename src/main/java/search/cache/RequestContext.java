@@ -1,7 +1,7 @@
-package sdk.search.cache;
+package search.cache;
 
-import sdk.objects.AbstractObjectUri;
-import sdk.search.SearchRequest;
+import objects.AbstractObjectUri;
+import search.SearchRequest;
 
 import java.util.Collection;
 import java.util.HashSet;

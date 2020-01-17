@@ -1,8 +1,8 @@
-package sdk.search.cache;
+package search.cache;
 
-import sdk.objects.AbstractObject;
-import sdk.search.ConditionType;
-import sdk.search.SearchRequest;
+import objects.AbstractObject;
+import search.ConditionType;
+import search.SearchRequest;
 
 import java.util.HashMap;
 import java.util.Map;

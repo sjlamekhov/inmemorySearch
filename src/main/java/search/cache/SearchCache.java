@@ -1,10 +1,10 @@
-package sdk.search.cache;
+package search.cache;
 
-import sdk.objects.AbstractObject;
-import sdk.objects.AbstractObjectUri;
-import sdk.search.SearchRequest;
-import sdk.search.optimizer.PlainSearchRequestOptimizer;
-import sdk.search.optimizer.SearchRequestOptimizer;
+import objects.AbstractObject;
+import objects.AbstractObjectUri;
+import search.SearchRequest;
+import search.optimizer.PlainSearchRequestOptimizer;
+import search.optimizer.SearchRequestOptimizer;
 
 import java.util.*;
 import java.util.function.Function;

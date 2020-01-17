@@ -1,10 +1,10 @@
-package sdk.search.cached;
+package search.cached;
 
-import sdk.objects.AbstractObject;
-import sdk.objects.AbstractObjectUri;
-import sdk.search.SearchRequest;
-import sdk.search.SearchService;
-import sdk.search.cache.SearchCache;
+import objects.AbstractObject;
+import objects.AbstractObjectUri;
+import search.SearchRequest;
+import search.SearchService;
+import search.cache.SearchCache;
 
 import java.util.Collection;
 

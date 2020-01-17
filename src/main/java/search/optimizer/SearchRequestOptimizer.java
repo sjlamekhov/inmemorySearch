@@ -1,6 +1,6 @@
-package sdk.search.optimizer;
+package search.optimizer;
 
-import sdk.search.SearchRequest;
+import search.SearchRequest;
 
 public interface SearchRequestOptimizer {
 

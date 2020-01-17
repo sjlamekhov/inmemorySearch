@@ -1,7 +1,7 @@
-package sdk.search.optimizer;
+package search.optimizer;
 
-import sdk.search.ConditionType;
-import sdk.search.SearchRequest;
+import search.ConditionType;
+import search.SearchRequest;
 
 import java.util.*;
 import java.util.stream.Collectors;
