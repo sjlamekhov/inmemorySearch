@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO: cover by tests
 public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final Map<String, SearchService<U, T>> searchMapping;
@@ -18,7 +19,7 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
 
     public void addService(String tenantId, SearchService<U, T> searchService) {
         if (searchMapping.containsKey(tenantId)) {
-            throw new RuntimeException(String.format("SearchServivce for %s tenant is already registered", tenantId));
+            throw new RuntimeException(String.format("SearchService for %s tenant is already registered", tenantId));
         }
         searchMapping.put(tenantId, searchService);
     }
