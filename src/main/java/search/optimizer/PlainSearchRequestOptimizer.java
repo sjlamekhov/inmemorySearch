@@ -1,7 +1,7 @@
 package search.optimizer;
 
 import search.ConditionType;
-import search.SearchRequest;
+import search.request.SearchRequest;
 
 import java.util.*;
 import java.util.stream.Collectors;

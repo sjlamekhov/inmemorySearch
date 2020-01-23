@@ -1,7 +1,7 @@
 package search.cache;
 
 import objects.AbstractObjectUri;
-import search.SearchRequest;
+import search.request.SearchRequest;
 
 import java.util.Collection;
 import java.util.HashSet;

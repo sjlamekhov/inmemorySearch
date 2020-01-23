@@ -2,7 +2,7 @@ package search.cache;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import search.SearchRequest;
+import search.request.SearchRequest;
 import search.optimizer.PlainSearchRequestOptimizer;
 import search.optimizer.SearchRequestOptimizer;
 

@@ -2,7 +2,7 @@ package search.cached;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import search.SearchRequest;
+import search.request.SearchRequest;
 import search.SearchService;
 import search.cache.SearchCache;
 

@@ -5,7 +5,7 @@ import objects.DocumentUri;
 import org.junit.Assert;
 import org.junit.Test;
 import search.ConditionType;
-import search.SearchRequest;
+import search.request.SearchRequest;
 import search.SearchService;
 import search.cache.SearchCache;
 import search.AbstractSearchServiceTest;

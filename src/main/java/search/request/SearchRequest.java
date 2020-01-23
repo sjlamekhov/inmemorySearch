@@ -1,4 +1,6 @@
-package search;
+package search.request;
+
+import search.ConditionType;
 
 import java.util.*;
 import java.util.function.Function;

@@ -2,7 +2,7 @@ package search.cache;
 
 import objects.AbstractObject;
 import search.ConditionType;
-import search.SearchRequest;
+import search.request.SearchRequest;
 
 import java.util.HashMap;
 import java.util.Map;

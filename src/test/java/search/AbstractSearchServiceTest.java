@@ -6,9 +6,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import search.ConditionType;
-import search.SearchRequest;
-import search.SearchService;
+import search.request.SearchRequest;
 
 
 import java.util.*;

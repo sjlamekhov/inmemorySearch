@@ -2,6 +2,7 @@ package search;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
+import search.request.SearchRequest;
 
 import java.util.Collection;
 import java.util.HashMap;

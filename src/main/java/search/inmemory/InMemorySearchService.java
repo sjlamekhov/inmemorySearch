@@ -3,7 +3,7 @@ package search.inmemory;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.ConditionType;
-import search.SearchRequest;
+import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;

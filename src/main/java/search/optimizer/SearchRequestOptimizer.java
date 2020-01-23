@@ -1,6 +1,6 @@
 package search.optimizer;
 
-import search.SearchRequest;
+import search.request.SearchRequest;
 
 public interface SearchRequestOptimizer {
 
