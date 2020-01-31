@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_generic_services = true;
+package networking.protobuf;
+
+message ChangeRequest {
+  string timestamp = 1;
+  string message = 2;
+}
+
+message ChangeAck {
+  string message = 1;
+}
+
+service GossipService {
+  rpc process (ChangeRequest) returns (ChangeAck);
+}
