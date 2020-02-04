@@ -1,5 +1,6 @@
 package networking;
 
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -11,12 +12,21 @@ public class NetworkDispatcher {
 
     private final Supplier<Message> messageProvider;
     private final Consumer<Message> messageSender;
+    private final Consumer<Message> messageDownstreamConsumer;
 
     private final int maxQueueSize = 256;
-    private final int sendAndReceiveAtOneTime = 128;
-    private final Consumer<Message> messageDownstreamConsumer;
     private long lastReceiveAndSendTimestamp = 0;
     private final long maxSendReceiveTimeout = 1000;
+
+    public NetworkDispatcher(
+            Supplier<Message> messageProvider,
+            Consumer<Message> messageSender,
+            Consumer<Message> messageDownstreamConsumer) {
+        this(messageProvider, messageSender, messageDownstreamConsumer,
+                new LinkedList<>(),
+                new LinkedList<>()
+        );
+    }
 
     public NetworkDispatcher(
             Supplier<Message> messageProvider,
@@ -44,7 +54,15 @@ public class NetworkDispatcher {
         lastReceiveAndSendTimestamp = System.currentTimeMillis();
         if (force || toSend.size() >= maxQueueSize || receivedMessages.size() >= maxQueueSize) {
             int maxSendAndReceiveAtOneTime = 0;
-            Message message = toSend.poll();
+            Message message = messageProvider.get();
+            while (null != message && maxSendAndReceiveAtOneTime < maxSendAndReceiveAtOneTime) {
+                receivedMessages.add(message);
+                message = messageProvider.get();
+                maxSendAndReceiveAtOneTime++;
+            }
+
+            maxSendAndReceiveAtOneTime = 0;
+            message = toSend.poll();
             while (null != message && maxSendAndReceiveAtOneTime < maxSendAndReceiveAtOneTime) {
                 messageSender.accept(message);
                 message = toSend.poll();
