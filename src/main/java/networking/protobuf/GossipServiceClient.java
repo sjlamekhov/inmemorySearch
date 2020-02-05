@@ -18,7 +18,7 @@ public class GossipServiceClient {
         return stub.process(changeRequest);
     }
 
-    public void shutdown() {
+    public void close() {
         managedChannel.shutdown();
     }
 
@@ -26,7 +26,7 @@ public class GossipServiceClient {
         GossipServiceClient gossipServiceClient = new GossipServiceClient();
         gossipServiceClient.init();
         gossipServiceClient.sendChange(ChangeRequest.newBuilder().setMessage("message").build());
-        gossipServiceClient.shutdown();
+        gossipServiceClient.close();
     }
 
 }
