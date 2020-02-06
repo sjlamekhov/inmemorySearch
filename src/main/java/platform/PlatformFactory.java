@@ -7,6 +7,8 @@ import objects.Document;
 import objects.DocumentUri;
 import search.SearchService;
 import search.SearchServiceFactory;
+import search.cached.CachedSearchService;
+import search.withChangesCollecting.ChangesCollectingSearchService;
 
 import java.util.Properties;
 
@@ -17,8 +19,9 @@ public class PlatformFactory {
 
         GossipServiceClient gossipServiceClient = new GossipServiceClient();
 
-        SearchService<DocumentUri, Document> searchService = SearchServiceFactory
-                .buildSearchService(new Properties());
+        ChangesCollectingSearchService<DocumentUri, Document> searchService = new ChangesCollectingSearchService<>(
+                SearchServiceFactory.buildSearchService(new Properties())
+        );
 
         return Platform.Builder.newInstance()
                 .setGossipServiceServer(gossipServiceServer)

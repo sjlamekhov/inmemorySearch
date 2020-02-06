@@ -59,13 +59,21 @@ public class ApplicationConfig {
                 () -> platform.getMessageConverter().convertToMessage(
                         platform.getGossipServiceServer().getIncomingQueue().poll()
                 ),
+                () -> platform.getSearchService().pollLocalChanges(),
                 message -> platform.getGossipServiceClient().sendChange(
                         platform.getMessageConverter().convertToChangeRequest(message)
                 ),
                 new Consumer<Message>() {
                     @Override
                     public void accept(Message message) {
-                        //add object to index or delete from index
+                        if (null == message) {
+                            return;
+                        }
+                        if (Message.MessageType.CREATE == message.getMessageType()) {
+                            platform.getSearchService().addObjectToIndex((Document) message.getAbstractObject());
+                        } else {
+                            platform.getSearchService().removeObjectFromIndex((Document) message.getAbstractObject());
+                        }
                     }
                 }
         );

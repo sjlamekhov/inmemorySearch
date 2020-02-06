@@ -7,7 +7,6 @@ import org.junit.Test;
 import search.ConditionType;
 import search.request.SearchRequest;
 import search.SearchService;
-import search.cache.SearchCache;
 import search.AbstractSearchServiceTest;
 import search.inmemory.InMemorySearchService;
 

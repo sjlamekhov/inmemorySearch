@@ -1,4 +1,4 @@
-package search.cache;
+package search.cached;
 
 import objects.AbstractObjectUri;
 import search.request.SearchRequest;

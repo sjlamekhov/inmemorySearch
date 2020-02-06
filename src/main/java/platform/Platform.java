@@ -6,16 +6,18 @@ import networking.protobuf.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
 import search.SearchService;
+import search.cached.CachedSearchService;
+import search.withChangesCollecting.ChangesCollectingSearchService;
 
 public class Platform {
 
-    private SearchService<DocumentUri, Document> searchService;
+    private ChangesCollectingSearchService<DocumentUri, Document> searchService;
     private GossipServiceServer gossipServiceServer;
     private GossipServiceClient gossipServiceClient;
     private MessageConverter messageConverter;
 
     private Platform(
-            SearchService<DocumentUri, Document> searchService,
+            ChangesCollectingSearchService<DocumentUri, Document> searchService,
             GossipServiceServer gossipServiceServer,
             GossipServiceClient gossipServiceClient,
             MessageConverter messageConverter) {
@@ -25,7 +27,7 @@ public class Platform {
         this.messageConverter = messageConverter;
     }
 
-    public SearchService<DocumentUri, Document> getSearchService() {
+    public ChangesCollectingSearchService<DocumentUri, Document> getSearchService() {
         return searchService;
     }
 
@@ -42,7 +44,7 @@ public class Platform {
     }
 
     public static class Builder {
-        private SearchService<DocumentUri, Document> searchService;
+        private ChangesCollectingSearchService<DocumentUri, Document> searchService;
         private GossipServiceServer gossipServiceServer;
         private GossipServiceClient gossipServiceClient;
         private MessageConverter messageConverter;
@@ -50,7 +52,7 @@ public class Platform {
         protected Builder() {
         }
 
-        public Builder setSearchService(SearchService<DocumentUri, Document> searchService) {
+        public Builder setSearchService(ChangesCollectingSearchService<DocumentUri, Document> searchService) {
             this.searchService = searchService;
             return this;
         }

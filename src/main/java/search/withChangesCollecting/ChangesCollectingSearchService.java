@@ -1,32 +1,45 @@
-package search.cached;
+package search.withChangesCollecting;
 
+import networking.Message;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import search.request.SearchRequest;
 import search.SearchService;
+import search.request.SearchRequest;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class CachedSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
+public class ChangesCollectingSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final SearchService<U, T> searchService;
-    private final SearchCache<U, T> searchCache;
+    private final Queue<Message> localChanges;
 
-    public CachedSearchService(SearchService<U, T> searchService) {
+    public ChangesCollectingSearchService(SearchService<U, T> searchService) {
         this.searchService = searchService;
-        this.searchCache = new SearchCache<>(sr -> searchService.search(null, sr));
+        this.localChanges = new LinkedList<>();
     }
 
     @Override
     public void addObjectToIndex(T object) {
-        searchCache.addToIndex(object);
         searchService.addObjectToIndex(object);
+        localChanges.add(new Message(
+                System.currentTimeMillis(),
+                object,
+                "",
+                Message.MessageType.CREATE
+        ));
     }
 
     @Override
     public void removeObjectFromIndex(T object) {
-        searchCache.removeObjectFromIndex(object);
         searchService.removeObjectFromIndex(object);
+        localChanges.add(new Message(
+                System.currentTimeMillis(),
+                object,
+                "",
+                Message.MessageType.DELETE
+        ));
     }
 
     @Override
@@ -36,17 +49,16 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
 
     @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
-        return searchCache.getCached(searchRequest);
+        return searchService.search(tenantId, searchRequest);
     }
 
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
-        return searchCache.getCached(searchRequest).size();
+        return searchService.count(tenantId, searchRequest);
     }
 
     @Override
     public void dropIndexes(String tenantId) {
-        searchCache.dropCache();
         searchService.dropIndexes(tenantId);
     }
 
@@ -55,7 +67,7 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
         searchService.close();
     }
 
-    public SearchCache<U, T> getSearchCache() {
-        return searchCache;
+    public Message pollLocalChanges() {
+        return localChanges.poll();
     }
 }
