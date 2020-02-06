@@ -1,5 +1,7 @@
 package server;
 
+import networking.Message;
+import networking.NetworkDispatcher;
 import networking.protobuf.GossipServiceClient;
 import networking.protobuf.GossipServiceServer;
 import objects.Document;
@@ -13,6 +15,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import platform.Platform;
 import platform.PlatformFactory;
 import search.SearchService;
+
+import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Configuration
 public class ApplicationConfig {
@@ -46,14 +52,47 @@ public class ApplicationConfig {
         return platform.getGossipServiceClient();
     }
 
+    @Bean(name = "networkDispatcher")
+    @DependsOn("taskExecutor")
+    public NetworkDispatcher networkDispatcher() {
+        return new NetworkDispatcher(
+                () -> platform.getMessageConverter().convertToMessage(
+                        platform.getGossipServiceServer().getIncomingQueue().poll()
+                ),
+                message -> platform.getGossipServiceClient().sendChange(
+                        platform.getMessageConverter().convertToChangeRequest(message)
+                ),
+                new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) {
+                        //add object to index or delete from index
+                    }
+                }
+        );
+    }
+
     @Bean(name = "taskExecutor")
     @DependsOn("platform")
     public TaskExecutor taskExecutor() {
-        //TODO: init network server and clients in threads
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(8);
         executor.setMaxPoolSize(16);
         executor.setQueueCapacity(24);
+        executor.initialize();
+        executor.execute(() -> {
+            try {
+                platform.getGossipServiceClient().init();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        executor.execute(() -> {
+            try {
+                platform.getGossipServiceServer().init();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         return executor;
     }
 

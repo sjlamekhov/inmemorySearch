@@ -1,5 +1,6 @@
 package platform;
 
+import networking.MessageConverterJson;
 import networking.protobuf.GossipServiceClient;
 import networking.protobuf.GossipServiceServer;
 import objects.Document;
@@ -23,6 +24,7 @@ public class PlatformFactory {
                 .setGossipServiceServer(gossipServiceServer)
                 .setGossipServiceClient(gossipServiceClient)
                 .setSearchService(searchService)
+                .setMessageConverter(new MessageConverterJson())
                 .build();
     }
 

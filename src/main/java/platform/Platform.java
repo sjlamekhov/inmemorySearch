@@ -1,5 +1,6 @@
 package platform;
 
+import networking.MessageConverter;
 import networking.protobuf.GossipServiceClient;
 import networking.protobuf.GossipServiceServer;
 import objects.Document;
@@ -11,11 +12,17 @@ public class Platform {
     private SearchService<DocumentUri, Document> searchService;
     private GossipServiceServer gossipServiceServer;
     private GossipServiceClient gossipServiceClient;
+    private MessageConverter messageConverter;
 
-    private Platform(SearchService<DocumentUri, Document> searchService, GossipServiceServer gossipServiceServer, GossipServiceClient gossipServiceClient) {
+    private Platform(
+            SearchService<DocumentUri, Document> searchService,
+            GossipServiceServer gossipServiceServer,
+            GossipServiceClient gossipServiceClient,
+            MessageConverter messageConverter) {
         this.searchService = searchService;
         this.gossipServiceServer = gossipServiceServer;
         this.gossipServiceClient = gossipServiceClient;
+        this.messageConverter = messageConverter;
     }
 
     public SearchService<DocumentUri, Document> getSearchService() {
@@ -30,10 +37,15 @@ public class Platform {
         return gossipServiceClient;
     }
 
+    public MessageConverter getMessageConverter() {
+        return messageConverter;
+    }
+
     public static class Builder {
         private SearchService<DocumentUri, Document> searchService;
         private GossipServiceServer gossipServiceServer;
         private GossipServiceClient gossipServiceClient;
+        private MessageConverter messageConverter;
 
         protected Builder() {
         }
@@ -53,6 +65,11 @@ public class Platform {
             return this;
         }
 
+        public Builder setMessageConverter(MessageConverter messageConverter) {
+            this.messageConverter = messageConverter;
+            return this;
+        }
+
         public static Builder newInstance() {
             return new Builder();
         }
@@ -61,7 +78,8 @@ public class Platform {
             return new Platform(
                     searchService,
                     gossipServiceServer,
-                    gossipServiceClient
+                    gossipServiceClient,
+                    messageConverter
             );
         }
     }
