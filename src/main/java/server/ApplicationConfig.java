@@ -16,15 +16,14 @@ import platform.Platform;
 import platform.PlatformFactory;
 import search.SearchService;
 
-import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 @Configuration
 public class ApplicationConfig {
 
     @Autowired
     private Platform platform;
+
+    @Autowired
+    private NetworkDispatcher networkDispatcher;
 
     @Autowired
     private TaskExecutor taskExecutor;
@@ -53,7 +52,7 @@ public class ApplicationConfig {
     }
 
     @Bean(name = "networkDispatcher")
-    @DependsOn("taskExecutor")
+    @DependsOn("platform")
     public NetworkDispatcher networkDispatcher() {
         return new NetworkDispatcher(
                 () -> platform.getMessageConverter().convertToMessage(
@@ -63,24 +62,21 @@ public class ApplicationConfig {
                 message -> platform.getGossipServiceClient().sendChange(
                         platform.getMessageConverter().convertToChangeRequest(message)
                 ),
-                new Consumer<Message>() {
-                    @Override
-                    public void accept(Message message) {
-                        if (null == message) {
-                            return;
-                        }
-                        if (Message.MessageType.CREATE == message.getMessageType()) {
-                            platform.getSearchService().addObjectToIndex((Document) message.getAbstractObject());
-                        } else {
-                            platform.getSearchService().removeObjectFromIndex((Document) message.getAbstractObject());
-                        }
+                message -> {
+                    if (null == message) {
+                        return;
+                    }
+                    if (Message.MessageType.CREATE == message.getMessageType()) {
+                        platform.getSearchService().addObjectToIndex((Document) message.getAbstractObject());
+                    } else {
+                        platform.getSearchService().removeObjectFromIndex((Document) message.getAbstractObject());
                     }
                 }
         );
     }
 
     @Bean(name = "taskExecutor")
-    @DependsOn("platform")
+    @DependsOn("networkDispatcher")
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(8);
@@ -97,6 +93,14 @@ public class ApplicationConfig {
         executor.execute(() -> {
             try {
                 platform.getGossipServiceServer().init();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        executor.execute(() -> {
+            try {
+                networkDispatcher.receiveAndSendMessages(true);
+                Thread.sleep(100000);
             } catch (Exception e) {
                 e.printStackTrace();
             }

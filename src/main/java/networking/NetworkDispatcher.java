@@ -34,14 +34,14 @@ public class NetworkDispatcher {
     }
 
     public NetworkDispatcher(
-            Supplier<Message> messageProvider1,
-            Supplier<Message> messageProvider2,
+            Supplier<Message> messagesFromOtherNodesProvider,
+            Supplier<Message> messagesFromThisNodeServicesProvider,
             Consumer<Message> messageSender,
             Consumer<Message> messageDownstreamConsumer,
             Queue<Message> receivedMessages,
             Queue<Message> toSend) {
-        this.messageProvider1 = messageProvider1;
-        this.messageProvider2 = messageProvider2;
+        this.messageProvider1 = messagesFromOtherNodesProvider;
+        this.messageProvider2 = messagesFromThisNodeServicesProvider;
         this.messageSender = messageSender;
         this.messageDownstreamConsumer = messageDownstreamConsumer;
 
@@ -49,19 +49,11 @@ public class NetworkDispatcher {
         this.toSend = toSend;
     }
 
-    public synchronized void addMessageToSend(Message message) {
-        toSend.add(message);
-        if (toSend.size() >= maxQueueSize
-                || (System.currentTimeMillis() - lastReceiveAndSendTimestamp >= maxSendReceiveTimeout)) {
-            receiveAndSendMessages(true);
-        }
-    }
-
     public synchronized void receiveAndSendMessages(boolean force) {
         lastReceiveAndSendTimestamp = System.currentTimeMillis();
         if (force || toSend.size() >= maxQueueSize || receivedMessages.size() >= maxQueueSize) {
             pollMessages(messageProvider1, receivedMessages::add, maxSendAndReceiveAtOneTime);
-            pollMessages(messageProvider2, receivedMessages::add, maxSendAndReceiveAtOneTime);
+            pollMessages(messageProvider2, toSend::add, maxSendAndReceiveAtOneTime);
             pollMessages(toSend::poll, messageSender, maxSendAndReceiveAtOneTime);
             pollMessages(receivedMessages::poll, messageDownstreamConsumer, maxSendAndReceiveAtOneTime);
         }

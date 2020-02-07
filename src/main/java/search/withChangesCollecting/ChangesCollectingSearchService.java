@@ -20,6 +20,11 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
         this.localChanges = new LinkedList<>();
     }
 
+    public ChangesCollectingSearchService(SearchService<U, T> searchService, Queue<Message> changes) {
+        this.searchService = searchService;
+        this.localChanges = changes;
+    }
+
     @Override
     public void addObjectToIndex(T object) {
         searchService.addObjectToIndex(object);
