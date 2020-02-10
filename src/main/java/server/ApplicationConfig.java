@@ -1,5 +1,7 @@
 package server;
 
+import configuration.ConfigProvider;
+import configuration.ConfigurationService;
 import networking.Message;
 import networking.NetworkDispatcher;
 import networking.protobuf.GossipServiceClient;
@@ -16,8 +18,12 @@ import platform.Platform;
 import platform.PlatformFactory;
 import search.SearchService;
 
+import java.util.Properties;
+
 @Configuration
 public class ApplicationConfig {
+
+    private final Properties properties;
 
     @Autowired
     private Platform platform;
@@ -28,9 +34,18 @@ public class ApplicationConfig {
     @Autowired
     private TaskExecutor taskExecutor;
 
+    public ApplicationConfig() {
+        properties = ConfigProvider.getProperties();
+    }
+
     @Bean(name = "platform")
     public Platform getPlatform() {
-        return PlatformFactory.buildPlatform();
+        return PlatformFactory.buildPlatform(properties);
+    }
+
+    @Bean(name = "configurationService")
+    public ConfigurationService getConfigurationService() {
+        return platform.getConfigurationService();
     }
 
     @Bean(name = "searchService", destroyMethod = "close")

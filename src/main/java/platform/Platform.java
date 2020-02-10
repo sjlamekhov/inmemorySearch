@@ -1,5 +1,6 @@
 package platform;
 
+import configuration.ConfigurationService;
 import networking.MessageConverter;
 import networking.protobuf.GossipServiceClient;
 import networking.protobuf.GossipServiceServer;
@@ -11,20 +12,27 @@ import search.withChangesCollecting.ChangesCollectingSearchService;
 
 public class Platform {
 
-    private ChangesCollectingSearchService<DocumentUri, Document> searchService;
-    private GossipServiceServer gossipServiceServer;
-    private GossipServiceClient gossipServiceClient;
-    private MessageConverter messageConverter;
+    private final ConfigurationService configurationService;
+    private final ChangesCollectingSearchService<DocumentUri, Document> searchService;
+    private final GossipServiceServer gossipServiceServer;
+    private final GossipServiceClient gossipServiceClient;
+    private final MessageConverter messageConverter;
 
     private Platform(
+            ConfigurationService configurationService,
             ChangesCollectingSearchService<DocumentUri, Document> searchService,
             GossipServiceServer gossipServiceServer,
             GossipServiceClient gossipServiceClient,
             MessageConverter messageConverter) {
+        this.configurationService = configurationService;
         this.searchService = searchService;
         this.gossipServiceServer = gossipServiceServer;
         this.gossipServiceClient = gossipServiceClient;
         this.messageConverter = messageConverter;
+    }
+
+    public ConfigurationService getConfigurationService() {
+        return configurationService;
     }
 
     public ChangesCollectingSearchService<DocumentUri, Document> getSearchService() {
@@ -48,6 +56,7 @@ public class Platform {
         private GossipServiceServer gossipServiceServer;
         private GossipServiceClient gossipServiceClient;
         private MessageConverter messageConverter;
+        private ConfigurationService configurationService;
 
         protected Builder() {
         }
@@ -72,12 +81,18 @@ public class Platform {
             return this;
         }
 
+        public Builder setConfigurationService(ConfigurationService configurationService) {
+            this.configurationService = configurationService;
+            return this;
+        }
+
         public static Builder newInstance() {
             return new Builder();
         }
 
         public Platform build() {
             return new Platform(
+                    configurationService,
                     searchService,
                     gossipServiceServer,
                     gossipServiceClient,

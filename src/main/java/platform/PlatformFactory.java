@@ -1,5 +1,6 @@
 package platform;
 
+import configuration.ConfigurationService;
 import networking.MessageConverterJson;
 import networking.protobuf.GossipServiceClient;
 import networking.protobuf.GossipServiceServer;
@@ -14,7 +15,9 @@ import java.util.Properties;
 
 public class PlatformFactory {
 
-    public static Platform buildPlatform() {
+    public static Platform buildPlatform(Properties properties) {
+        ConfigurationService configurationService = ConfigurationService.buildConfigurationService(properties);
+
         GossipServiceServer gossipServiceServer = new GossipServiceServer();
 
         GossipServiceClient gossipServiceClient = new GossipServiceClient();
@@ -24,6 +27,7 @@ public class PlatformFactory {
         );
 
         return Platform.Builder.newInstance()
+                .setConfigurationService(configurationService)
                 .setGossipServiceServer(gossipServiceServer)
                 .setGossipServiceClient(gossipServiceClient)
                 .setSearchService(searchService)
