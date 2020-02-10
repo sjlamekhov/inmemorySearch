@@ -7,10 +7,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import search.AbstractSearchServiceTest;
-import search.ConditionType;
 import search.SearchService;
 import search.inmemory.InMemorySearchService;
-import search.request.SearchRequest;
 import search.withChangesCollecting.ChangesCollectingSearchService;
 
 import java.util.*;
@@ -18,11 +16,6 @@ import java.util.*;
 public class ChangesCollectingSearchServiceTest extends AbstractSearchServiceTest {
 
     private static LinkedList<Message> changes = new LinkedList<>();
-    private final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-            .setAttributeToSearch("attribute")
-            .setValueToSearch("value")
-            .setConditionType(ConditionType.EQ)
-            .build();
 
     @Override
     protected SearchService<DocumentUri, Document> getSearchService() {

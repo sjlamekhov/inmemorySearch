@@ -99,7 +99,7 @@ public class ApplicationConfig {
         });
         executor.execute(() -> {
             try {
-                networkDispatcher.receiveAndSendMessages(true);
+                networkDispatcher.receiveAndSendMessages(false);
                 Thread.sleep(100000);
             } catch (Exception e) {
                 e.printStackTrace();

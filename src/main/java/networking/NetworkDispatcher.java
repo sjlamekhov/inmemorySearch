@@ -10,8 +10,8 @@ public class NetworkDispatcher {
     private final Queue<Message> receivedMessages;
     private final Queue<Message> toSend;
 
-    private final Supplier<Message> messageProvider1;
-    private final Supplier<Message> messageProvider2;
+    private final Supplier<Message> messagesFromOtherNodesProvider;
+    private final Supplier<Message> messagesFromThisNodeServicesProvider;
     private final Consumer<Message> messageSender;
     private final Consumer<Message> messageDownstreamConsumer;
 
@@ -21,11 +21,12 @@ public class NetworkDispatcher {
     private final int maxSendAndReceiveAtOneTime = 256;
 
     public NetworkDispatcher(
-            Supplier<Message> messageProvider1,
-            Supplier<Message> messageProvider2,
+            Supplier<Message> messagesFromOtherNodesProvider,
+            Supplier<Message> messagesFromThisNodeServicesProvider,
             Consumer<Message> messageSender,
             Consumer<Message> messageDownstreamConsumer) {
-        this(messageProvider1, messageProvider2,
+        this(messagesFromOtherNodesProvider,
+                messagesFromThisNodeServicesProvider,
                 messageSender,
                 messageDownstreamConsumer,
                 new LinkedList<>(),
@@ -40,8 +41,8 @@ public class NetworkDispatcher {
             Consumer<Message> messageDownstreamConsumer,
             Queue<Message> receivedMessages,
             Queue<Message> toSend) {
-        this.messageProvider1 = messagesFromOtherNodesProvider;
-        this.messageProvider2 = messagesFromThisNodeServicesProvider;
+        this.messagesFromOtherNodesProvider = messagesFromOtherNodesProvider;
+        this.messagesFromThisNodeServicesProvider = messagesFromThisNodeServicesProvider;
         this.messageSender = messageSender;
         this.messageDownstreamConsumer = messageDownstreamConsumer;
 
@@ -51,18 +52,20 @@ public class NetworkDispatcher {
 
     public synchronized void receiveAndSendMessages(boolean force) {
         lastReceiveAndSendTimestamp = System.currentTimeMillis();
-        if (force || toSend.size() >= maxQueueSize || receivedMessages.size() >= maxQueueSize) {
-            pollMessages(messageProvider1, receivedMessages::add, maxSendAndReceiveAtOneTime);
-            pollMessages(messageProvider2, toSend::add, maxSendAndReceiveAtOneTime);
-            pollMessages(toSend::poll, messageSender, maxSendAndReceiveAtOneTime);
-            pollMessages(receivedMessages::poll, messageDownstreamConsumer, maxSendAndReceiveAtOneTime);
-        }
+        boolean forcePoll = force || toSend.size() >= maxQueueSize || receivedMessages.size() >= maxQueueSize;
+        pollMessages(messagesFromOtherNodesProvider, receivedMessages::add, maxSendAndReceiveAtOneTime, forcePoll);
+        pollMessages(messagesFromThisNodeServicesProvider, toSend::add, maxSendAndReceiveAtOneTime, forcePoll);
+        pollMessages(toSend::poll, messageSender, maxSendAndReceiveAtOneTime, forcePoll);
+        pollMessages(receivedMessages::poll, messageDownstreamConsumer, maxSendAndReceiveAtOneTime, forcePoll);
     }
 
-    private static void pollMessages(Supplier<Message> source, Consumer<Message> messageConsumer, int maxSendAndReceiveAtOneTime) {
+    private static void pollMessages(Supplier<Message> source,
+                                     Consumer<Message> messageConsumer,
+                                     int maxSendAndReceiveAtOneTime,
+                                     boolean force) {
         int polledCount = 0;
         Message message = source.get();
-        while (null != message && polledCount < maxSendAndReceiveAtOneTime) {
+        while (null != message && (force || polledCount < maxSendAndReceiveAtOneTime)) {
             messageConsumer.accept(message);
             message = source.get();
             polledCount++;
