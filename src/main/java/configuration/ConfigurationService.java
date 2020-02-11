@@ -31,15 +31,15 @@ public class ConfigurationService {
     public static ConfigurationService buildConfigurationService(Properties properties) {
         ConfigurationService result = new ConfigurationService();
 
-        String[] tenantsFromProperties = properties.getProperty(ConfigurationPropertiesConstants.TENANTS, "").split(",");
-        result.tenants = new ArrayList<>(Arrays.asList(tenantsFromProperties));
+        String tenantsFromProperties = properties.getProperty(ConfigurationPropertiesConstants.TENANTS);
+        result.tenants = tenantsFromProperties != null ? new ArrayList<>(Arrays.asList(tenantsFromProperties.split(","))) : Collections.emptyList();
 
         result.enableSync = Boolean.valueOf(properties.getProperty(ConfigurationPropertiesConstants.ENABLE_SYNC, "false"));
 
-        result.serverPort = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.SERVER_PORT), 6060);
+        result.serverPort = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.SERVER_PORT, "6060"));
 
-        String[] clusterNodes = properties.getProperty(ConfigurationPropertiesConstants.CLUSTER_NODES, "").split(",");
-        result.clusterNodes = new ArrayList<>(Arrays.asList(clusterNodes));
+        String clusterNodesFromProperties = properties.getProperty(ConfigurationPropertiesConstants.CLUSTER_NODES);
+        result.clusterNodes = clusterNodesFromProperties != null ? new ArrayList<>(Arrays.asList(clusterNodesFromProperties.split(","))) : Collections.emptyList();
 
         return result;
     }

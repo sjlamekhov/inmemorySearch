@@ -1,0 +1,36 @@
+package configuration;
+
+import org.junit.Assert;
+import org.junit.Test;
+import utils.FileUtils;
+
+import java.util.Arrays;
+
+public class ConfigurationServiceTest {
+
+    @Test
+    public void testDefaults() {
+        ConfigurationService configurationService = ConfigurationService.buildConfigurationService(
+                FileUtils.propertiesFromClasspath("configServiceTests/configServiceTestEmpty.properties")
+        );
+        Assert.assertTrue(configurationService.getClusterNodes().isEmpty());
+        Assert.assertEquals(6060, configurationService.getServerPort());
+        Assert.assertTrue(configurationService.getTenants().isEmpty());
+        Assert.assertEquals(false, configurationService.isEnableSync());
+    }
+
+    @Test
+    public void test() {
+        ConfigurationService configurationService = ConfigurationService.buildConfigurationService(
+                FileUtils.propertiesFromClasspath("configServiceTests/configServiceTest.properties")
+        );
+        Assert.assertEquals(2, configurationService.getClusterNodes().size());
+        Assert.assertTrue(configurationService.getClusterNodes().containsAll(Arrays.asList("localhost:5555", "localhost:6666")));
+        Assert.assertEquals(7777, configurationService.getServerPort());
+        Assert.assertEquals(2, configurationService.getTenants().size());
+        Assert.assertTrue(configurationService.getTenants().containsAll(Arrays.asList("tenantA", "tenantB")));
+        Assert.assertEquals(true, configurationService.isEnableSync());
+    }
+
+
+}
