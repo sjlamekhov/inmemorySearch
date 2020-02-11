@@ -36,9 +36,9 @@ public class GossipServiceServer {
         server.shutdown();
     }
 
-    public static void main(String[] args) throws Exception {
-        GossipServiceServer gossipServiceServer = new GossipServiceServer();
-        gossipServiceServer.init();
-    }
+//    public static void main(String[] args) throws Exception {
+//        GossipServiceServer gossipServiceServer = new GossipServiceServer();
+//        gossipServiceServer.init();
+//    }
 
 }

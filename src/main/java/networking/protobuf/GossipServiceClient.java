@@ -22,11 +22,11 @@ public class GossipServiceClient {
         managedChannel.shutdown();
     }
 
-    public static void main(String[] args) {
-        GossipServiceClient gossipServiceClient = new GossipServiceClient();
-        gossipServiceClient.init();
-        gossipServiceClient.sendChange(ChangeRequest.newBuilder().setMessage("message").build());
-        gossipServiceClient.close();
-    }
+//    public static void main(String[] args) {
+//        GossipServiceClient gossipServiceClient = new GossipServiceClient();
+//        gossipServiceClient.init();
+//        gossipServiceClient.sendChange(ChangeRequest.newBuilder().setMessage("message").build());
+//        gossipServiceClient.close();
+//    }
 
 }

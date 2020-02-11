@@ -5,6 +5,7 @@ import configuration.ConfigurationService;
 import networking.Message;
 import networking.NetworkDispatcher;
 import networking.protobuf.GossipServiceClient;
+import networking.protobuf.GossipServiceMultiClient;
 import networking.protobuf.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
@@ -60,10 +61,10 @@ public class ApplicationConfig {
         return platform.getGossipServiceServer();
     }
 
-    @Bean(name = "gossipServiceClient", destroyMethod = "close")
+    @Bean(name = "gossipServiceMultiClient", destroyMethod = "close")
     @DependsOn("platform")
-    public GossipServiceClient getGossipServiceClient() {
-        return platform.getGossipServiceClient();
+    public GossipServiceMultiClient getGossipServiceMultiClient() {
+        return platform.getGossipServiceMultiClient();
     }
 
     @Bean(name = "networkDispatcher")
@@ -74,7 +75,7 @@ public class ApplicationConfig {
                         platform.getGossipServiceServer().getIncomingQueue().poll()
                 ),
                 () -> platform.getSearchService().pollLocalChanges(),
-                message -> platform.getGossipServiceClient().sendChange(
+                message -> platform.getGossipServiceMultiClient().sendChange(
                         platform.getMessageConverter().convertToChangeRequest(message)
                 ),
                 message -> {
@@ -100,7 +101,7 @@ public class ApplicationConfig {
         executor.initialize();
         executor.execute(() -> {
             try {
-                platform.getGossipServiceClient().init();
+                platform.getGossipServiceMultiClient().init();
             } catch (Exception e) {
                 e.printStackTrace();
             }
