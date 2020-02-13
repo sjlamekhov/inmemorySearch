@@ -1,4 +1,7 @@
-package networking.protobuf;
+package networking;
+
+import networking.GossipServiceClient;
+import networking.protobuf.ChangeRequest;
 
 import java.util.HashMap;
 import java.util.Map;

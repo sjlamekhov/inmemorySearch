@@ -2,13 +2,10 @@ package platform;
 
 import configuration.ConfigurationService;
 import networking.MessageConverter;
-import networking.protobuf.GossipServiceClient;
-import networking.protobuf.GossipServiceMultiClient;
-import networking.protobuf.GossipServiceServer;
+import networking.GossipServiceMultiClient;
+import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
-import search.SearchService;
-import search.cached.CachedSearchService;
 import search.withChangesCollecting.ChangesCollectingSearchService;
 
 public class Platform {
