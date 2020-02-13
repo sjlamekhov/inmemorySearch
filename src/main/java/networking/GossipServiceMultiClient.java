@@ -29,6 +29,15 @@ public class GossipServiceMultiClient {
         clients.values().forEach(i -> i.sendChange(changeRequest));
     }
 
+    public boolean isStarted() {
+        for (GossipServiceClient gossipServiceClient : clients.values()) {
+            if (!gossipServiceClient.isStarted()) {
+                break;
+            }
+        }
+        return true;
+    }
+
     public void close() {
         clients.values().forEach(GossipServiceClient::close);
     }

@@ -11,6 +11,7 @@ import java.util.Queue;
 public class GossipServiceServer {
 
     private static final int DEFAULT_PORT = 6060;
+    private boolean isStarted;
 
     private Server server;
     private int port;
@@ -22,7 +23,13 @@ public class GossipServiceServer {
 
     public GossipServiceServer(int port) {
         this.port = port;
+        this.isStarted = false;
         this.incomingQueue = new LinkedList<>();
+    }
+
+    public GossipServiceServer setStarted(boolean started) {
+        isStarted = started;
+        return this;
     }
 
     public Queue<ChangeRequest> getIncomingQueue() {
@@ -36,10 +43,16 @@ public class GossipServiceServer {
                 .build();
         try {
             server.start();
+            isStarted = true;
+            System.out.println("server init done");
             server.awaitTermination();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isStarted() {
+        return isStarted;
     }
 
     public void close() {

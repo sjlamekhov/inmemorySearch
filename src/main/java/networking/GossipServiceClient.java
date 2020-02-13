@@ -10,6 +10,7 @@ public class GossipServiceClient {
 
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 6060;
+    private boolean isStarted;
 
     private String host;
     private int port;
@@ -23,16 +24,25 @@ public class GossipServiceClient {
     public GossipServiceClient(String host, int port) {
         this.host = host;
         this.port = port;
+        this.isStarted = false;
     }
 
     public void init() {
         managedChannel = ManagedChannelBuilder
-                .forAddress(host, port).usePlaintext().build();
+                .forAddress(host, port)
+                .usePlaintext()
+                .build();
         stub = GossipServiceGrpc.newBlockingStub(managedChannel);
+        isStarted = true;
+        System.out.println("client init done");
     }
 
     public ChangeAck sendChange(ChangeRequest changeRequest) {
         return stub.process(changeRequest);
+    }
+
+    public boolean isStarted() {
+        return isStarted;
     }
 
     public void close() {
