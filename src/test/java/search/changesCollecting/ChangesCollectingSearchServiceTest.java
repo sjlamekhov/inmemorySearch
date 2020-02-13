@@ -13,6 +13,8 @@ import search.withChangesCollecting.ChangesCollectingSearchService;
 
 import java.util.*;
 
+import static utils.QueueUtils.extractFromQueue;
+
 public class ChangesCollectingSearchServiceTest extends AbstractSearchServiceTest {
 
     private static LinkedList<Message> changes = new LinkedList<>();
@@ -46,16 +48,6 @@ public class ChangesCollectingSearchServiceTest extends AbstractSearchServiceTes
     public void after() {
         super.after();
         changes.clear();
-    }
-
-    private static List<Message> extractFromQueue(Queue<Message> source) {
-        Message message = changes.poll();
-        List<Message> result = new ArrayList<>();
-        while (message != null) {
-            result.add(message);
-            message = changes.poll();
-        }
-        return result;
     }
 
 }
