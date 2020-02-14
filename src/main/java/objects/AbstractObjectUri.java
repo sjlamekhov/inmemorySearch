@@ -4,20 +4,20 @@ import dao.UriGenerator;
 
 public abstract class AbstractObjectUri {
 
-    private final String id;
-    private final String tenantId;
-    private final boolean isNew;
+    protected String id;
+    protected String tenantId;
+
+    public AbstractObjectUri() {
+    }
 
     public AbstractObjectUri(String tenantId) {
         this.id = UriGenerator.generateId();
         this.tenantId = tenantId;
-        this.isNew = true;
     }
 
     public AbstractObjectUri(String id, String tenantId) {
         this.id = id;
         this.tenantId = tenantId;
-        this.isNew = false;
     }
 
     public String getId() {
@@ -26,11 +26,6 @@ public abstract class AbstractObjectUri {
 
     public String getTenantId() {
         return tenantId;
-    }
-
-    public boolean isNew() {
-        return isNew;
-
     }
 
     @Override

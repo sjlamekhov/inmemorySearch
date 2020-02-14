@@ -16,6 +16,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import platform.Platform;
 import platform.PlatformFactory;
+import platform.StatusService;
 import search.SearchService;
 
 import java.util.Properties;
@@ -66,6 +67,12 @@ public class ApplicationConfig {
         return platform.getGossipServiceMultiClient();
     }
 
+    @Bean(name = "statusService")
+    @DependsOn("platform")
+    public StatusService getStatusService() {
+        return platform.getStatusService();
+    }
+
     @Bean(name = "networkDispatcher")
     @DependsOn("platform")
     public NetworkDispatcher networkDispatcher() {
@@ -82,9 +89,9 @@ public class ApplicationConfig {
                         return;
                     }
                     if (Message.MessageType.CREATE == message.getMessageType()) {
-                        platform.getSearchService().addObjectToIndex((Document) message.getAbstractObject());
+                        platform.getSearchService().addObjectToIndex((Document) message.getObject());
                     } else {
-                        platform.getSearchService().removeObjectFromIndex((Document) message.getAbstractObject());
+                        platform.getSearchService().removeObjectFromIndex((Document) message.getObject());
                     }
                 }
         );

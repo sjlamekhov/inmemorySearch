@@ -35,13 +35,13 @@ public class ChangesCollectingSearchServiceTest extends AbstractSearchServiceTes
         List<Message> extractedMessages = extractFromQueue(changes);
         Assert.assertEquals(1, extractedMessages.size());
         Assert.assertEquals(Message.MessageType.CREATE, extractedMessages.iterator().next().getMessageType());
-        Assert.assertEquals(document, extractedMessages.iterator().next().getAbstractObject());
+        Assert.assertEquals(document, extractedMessages.iterator().next().getObject());
 
         searchService.removeObjectFromIndex(document);
         extractedMessages = extractFromQueue(changes);
         Assert.assertEquals(1, extractedMessages.size());
         Assert.assertEquals(Message.MessageType.DELETE, extractedMessages.iterator().next().getMessageType());
-        Assert.assertEquals(document, extractedMessages.iterator().next().getAbstractObject());
+        Assert.assertEquals(document, extractedMessages.iterator().next().getObject());
     }
 
     @After

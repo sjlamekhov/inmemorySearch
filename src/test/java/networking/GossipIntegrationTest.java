@@ -22,14 +22,14 @@ public class GossipIntegrationTest {
 
     @Test
     public void testWithMultiClient() throws Exception {
-        MessageConverter messageConverter = new MessageConverterJson();
+        MessageConverter messageConverter = new DocumentMessageConverterJson();
         Map<String, String> attributes = new HashMap<>();
         attributes.put("key", "value");
         Document documentToSend = new Document(
                 new DocumentUri("testTenantId"),
                 attributes
         );
-        Message messageTosend = new Message(
+        Message<Document> messageTosend = new Message<>(
                 System.currentTimeMillis(),
                 documentToSend,
                 "localhost",
@@ -58,7 +58,9 @@ public class GossipIntegrationTest {
             //checking B
             List<ChangeRequest> extractedFromQueue = extractFromQueue(gossipServiceServerB.getIncomingQueue());
             Assert.assertEquals(1, extractedFromQueue.size());
-            Assert.assertEquals(changeRequestToSend, extractedFromQueue.iterator().next());
+            ChangeRequest changeRequest = extractedFromQueue.iterator().next();
+            Assert.assertEquals(changeRequestToSend, changeRequest);
+            Assert.assertEquals(documentToSend, messageConverter.convertToMessage(changeRequest).getObject());
             //checking C
             extractedFromQueue = extractFromQueue(gossipServiceServerC.getIncomingQueue());
             Assert.assertEquals(1, extractedFromQueue.size());

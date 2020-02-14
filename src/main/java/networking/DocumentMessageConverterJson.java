@@ -1,19 +1,23 @@
 package networking;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.channel.socket.oio.DefaultOioSocketChannelConfig;
 import networking.protobuf.ChangeRequest;
+import objects.Document;
 
 import java.io.IOException;
 
-public class MessageConverterJson implements MessageConverter {
+public class DocumentMessageConverterJson implements MessageConverter {
 
     private ObjectMapper mapper = new ObjectMapper();
 
     public Message convertToMessage(ChangeRequest changeRequest) {
         String messageString = changeRequest.getMessage();
         try {
-            return mapper.readValue(messageString, Message.class);
+            return mapper.readValue(messageString, new TypeReference<Message<Document>>() {});
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }

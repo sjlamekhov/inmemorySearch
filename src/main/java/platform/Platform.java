@@ -15,18 +15,20 @@ public class Platform {
     private final GossipServiceServer gossipServiceServer;
     private final GossipServiceMultiClient gossipServiceMultiClient;
     private final MessageConverter messageConverter;
+    private final StatusService statusService;
 
     private Platform(
             ConfigurationService configurationService,
             ChangesCollectingSearchService<DocumentUri, Document> searchService,
             GossipServiceServer gossipServiceServer,
             GossipServiceMultiClient gossipServiceMultiClient,
-            MessageConverter messageConverter) {
+            MessageConverter messageConverter, StatusService statusService) {
         this.configurationService = configurationService;
         this.searchService = searchService;
         this.gossipServiceServer = gossipServiceServer;
         this.gossipServiceMultiClient = gossipServiceMultiClient;
         this.messageConverter = messageConverter;
+        this.statusService = statusService;
     }
 
     public ConfigurationService getConfigurationService() {
@@ -49,12 +51,17 @@ public class Platform {
         return messageConverter;
     }
 
+    public StatusService getStatusService() {
+        return statusService;
+    }
+
     public static class Builder {
         private ChangesCollectingSearchService<DocumentUri, Document> searchService;
         private GossipServiceServer gossipServiceServer;
         private GossipServiceMultiClient gossipServiceMultiClient;
         private MessageConverter messageConverter;
         private ConfigurationService configurationService;
+        private StatusService statusService;
 
         protected Builder() {
         }
@@ -84,6 +91,11 @@ public class Platform {
             return this;
         }
 
+        public Builder setStatusServer(StatusService statusService) {
+            this.statusService = statusService;
+            return this;
+        }
+
         public static Builder newInstance() {
             return new Builder();
         }
@@ -94,7 +106,8 @@ public class Platform {
                     searchService,
                     gossipServiceServer,
                     gossipServiceMultiClient,
-                    messageConverter
+                    messageConverter,
+                    statusService
             );
         }
     }

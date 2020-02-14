@@ -1,5 +1,6 @@
 package networking;
 
+import io.grpc.InternalChannelz;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import networking.protobuf.ChangeRequest;
@@ -27,11 +28,6 @@ public class GossipServiceServer {
         this.incomingQueue = new LinkedList<>();
     }
 
-    public GossipServiceServer setStarted(boolean started) {
-        isStarted = started;
-        return this;
-    }
-
     public Queue<ChangeRequest> getIncomingQueue() {
         return incomingQueue;
     }
@@ -55,13 +51,40 @@ public class GossipServiceServer {
         return isStarted;
     }
 
+    public ServerStatus getServerStatus() {
+        return new ServerStatus(
+                port,
+                isStarted,
+                incomingQueue.size()
+        );
+    }
+
     public void close() {
         server.shutdown();
     }
 
-//    public static void main(String[] args) throws Exception {
-//        GossipServiceServer gossipServiceServer = new GossipServiceServer();
-//        gossipServiceServer.init();
-//    }
+    public class ServerStatus {
+        private final int port;
+        private final boolean isStarted;
+        private final int queueSize;
+
+        public ServerStatus(int port, boolean isStarted, int queueSize) {
+            this.port = port;
+            this.isStarted = isStarted;
+            this.queueSize = queueSize;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public boolean isStarted() {
+            return isStarted;
+        }
+
+        public int getQueueSize() {
+            return queueSize;
+        }
+    }
 
 }

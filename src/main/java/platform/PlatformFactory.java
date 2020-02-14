@@ -2,7 +2,7 @@ package platform;
 
 import configuration.ConfigurationService;
 import networking.GossipServiceClient;
-import networking.MessageConverterJson;
+import networking.DocumentMessageConverterJson;
 import networking.GossipServiceMultiClient;
 import networking.GossipServiceServer;
 import objects.Document;
@@ -39,7 +39,8 @@ public class PlatformFactory {
                 .setGossipServiceServer(gossipServiceServer)
                 .setGossipServiceMultiClient(gossipServiceMultiClient)
                 .setSearchService(searchService)
-                .setMessageConverter(new MessageConverterJson())
+                .setMessageConverter(new DocumentMessageConverterJson())
+                .setStatusServer(new StatusService(gossipServiceServer, gossipServiceMultiClient))
                 .build();
     }
 

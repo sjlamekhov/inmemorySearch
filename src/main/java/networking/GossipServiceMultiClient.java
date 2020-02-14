@@ -38,6 +38,14 @@ public class GossipServiceMultiClient {
         return true;
     }
 
+    public Map<String, GossipServiceClient.ClientStatus> getClientStatus() {
+        Map<String, GossipServiceClient.ClientStatus> result = new HashMap<>();
+        for (Map.Entry<String, GossipServiceClient> entry : clients.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getClientStatus());
+        }
+        return result;
+    }
+
     public void close() {
         clients.values().forEach(GossipServiceClient::close);
     }

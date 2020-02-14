@@ -2,20 +2,23 @@ package networking;
 
 import objects.AbstractObject;
 
-public class Message {
+public class Message<T extends AbstractObject> {
 
     public enum MessageType {
         CREATE, DELETE
     }
 
     private long timestamp;
-    private AbstractObject abstractObject;
+    private T object;
     private String sentFrom;
     private MessageType messageType;
 
-    public Message(long timestamp, AbstractObject abstractObject, String sentFrom, MessageType messageType) {
+    public Message() {
+    }
+
+    public Message(long timestamp, T object, String sentFrom, MessageType messageType) {
         this.timestamp = timestamp;
-        this.abstractObject = abstractObject;
+        this.object = object;
         this.sentFrom = sentFrom;
         this.messageType = messageType;
     }
@@ -24,8 +27,8 @@ public class Message {
         return timestamp;
     }
 
-    public AbstractObject getAbstractObject() {
-        return abstractObject;
+    public T getObject() {
+        return object;
     }
 
     public String getSentFrom() {
@@ -44,7 +47,7 @@ public class Message {
         Message message = (Message) o;
 
         if (timestamp != message.timestamp) return false;
-        if (abstractObject != null ? !abstractObject.equals(message.abstractObject) : message.abstractObject != null)
+        if (object != null ? !object.equals(message.object) : message.object != null)
             return false;
         if (sentFrom != null ? !sentFrom.equals(message.sentFrom) : message.sentFrom != null) return false;
         return messageType == message.messageType;
@@ -53,7 +56,7 @@ public class Message {
     @Override
     public int hashCode() {
         int result = (int) (timestamp ^ (timestamp >>> 32));
-        result = 31 * result + (abstractObject != null ? abstractObject.hashCode() : 0);
+        result = 31 * result + (object != null ? object.hashCode() : 0);
         result = 31 * result + (sentFrom != null ? sentFrom.hashCode() : 0);
         result = 31 * result + (messageType != null ? messageType.hashCode() : 0);
         return result;

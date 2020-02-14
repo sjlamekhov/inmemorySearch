@@ -3,9 +3,12 @@ package search.withChangesCollecting;
 import networking.Message;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
+import objects.Document;
 import search.SearchService;
 import search.request.SearchRequest;
 
+import javax.print.Doc;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,15 +17,21 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
 
     private final SearchService<U, T> searchService;
     private final Queue<Message> localChanges;
+    private String hostName = "localhost";
 
     public ChangesCollectingSearchService(SearchService<U, T> searchService) {
         this.searchService = searchService;
         this.localChanges = new LinkedList<>();
     }
 
-    public ChangesCollectingSearchService(SearchService<U, T> searchService, Queue<Message> changes) {
+    public ChangesCollectingSearchService(
+            SearchService<U, T> searchService,
+            Queue<Message> changes) {
         this.searchService = searchService;
         this.localChanges = changes;
+        try {
+            this.hostName = InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {}
     }
 
     @Override
@@ -30,7 +39,7 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
         searchService.addObjectToIndex(object);
         localChanges.add(new Message(
                 System.currentTimeMillis(),
-                object,
+                (Document) object,
                 "",
                 Message.MessageType.CREATE
         ));
@@ -41,7 +50,7 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
         searchService.removeObjectFromIndex(object);
         localChanges.add(new Message(
                 System.currentTimeMillis(),
-                object,
+                (Document) object,
                 "",
                 Message.MessageType.DELETE
         ));

@@ -2,6 +2,9 @@ package objects;
 
 public class DocumentUri extends AbstractObjectUri {
 
+    public DocumentUri() {
+    }
+
     public DocumentUri(String tenantId) {
         super(tenantId);
     }

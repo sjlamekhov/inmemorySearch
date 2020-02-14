@@ -44,10 +44,10 @@ public class NetworkDispatcherTest {
         networkDispatcher.receiveAndSendMessages(true);
 
         Assert.assertEquals(2, collectionForMessageSender.size());
-        Assert.assertTrue(collectionForMessageSender.stream().map(i -> i.getAbstractObject().getUri().getId()).allMatch(i -> i.startsWith("fromThisNode")));
+        Assert.assertTrue(collectionForMessageSender.stream().map(i -> i.getObject().getUri().getId()).allMatch(i -> i.startsWith("fromThisNode")));
 
         Assert.assertEquals(2, collectionForDownstream.size());
-        Assert.assertTrue(collectionForDownstream.stream().map(i -> i.getAbstractObject().getUri().getId()).allMatch(i -> i.startsWith("fromOtherNodes")));
+        Assert.assertTrue(collectionForDownstream.stream().map(i -> i.getObject().getUri().getId()).allMatch(i -> i.startsWith("fromOtherNodes")));
     }
 
     private static Consumer<Message> makeConsumerFromCollection(Collection<Message> output) {

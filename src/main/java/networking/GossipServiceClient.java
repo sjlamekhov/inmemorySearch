@@ -16,6 +16,7 @@ public class GossipServiceClient {
     private int port;
     private GossipServiceGrpc.GossipServiceBlockingStub stub;
     private ManagedChannel managedChannel;
+    private long numberOfSentMessages = 0;
 
     public GossipServiceClient() {
         this(DEFAULT_HOST, DEFAULT_PORT);
@@ -38,6 +39,7 @@ public class GossipServiceClient {
     }
 
     public ChangeAck sendChange(ChangeRequest changeRequest) {
+        numberOfSentMessages += 1;
         return stub.process(changeRequest);
     }
 
@@ -45,15 +47,48 @@ public class GossipServiceClient {
         return isStarted;
     }
 
+    public ClientStatus getClientStatus() {
+        return new ClientStatus(
+                host,
+                port,
+                isStarted,
+                numberOfSentMessages
+        );
+    }
+
     public void close() {
         managedChannel.shutdown();
     }
 
-//    public static void main(String[] args) {
-//        GossipServiceClient gossipServiceClient = new GossipServiceClient();
-//        gossipServiceClient.init();
-//        gossipServiceClient.sendChange(ChangeRequest.newBuilder().setMessage("message").build());
-//        gossipServiceClient.close();
-//    }
+    public class ClientStatus {
+
+        private final String host;
+        private final int port;
+        private final boolean isStarted;
+        private final long numberOfSentMessages;
+
+        public ClientStatus(String host, int port, boolean isStarted, long numberOfSentMessages) {
+            this.host = host;
+            this.port = port;
+            this.isStarted = isStarted;
+            this.numberOfSentMessages = numberOfSentMessages;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public boolean isStarted() {
+            return isStarted;
+        }
+
+        public long getNumberOfSentMessages() {
+            return numberOfSentMessages;
+        }
+    }
 
 }
