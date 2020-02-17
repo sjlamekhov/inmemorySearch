@@ -13,6 +13,9 @@ public class DocumentMessageConverterJson implements MessageConverter {
     private ObjectMapper mapper = new ObjectMapper();
 
     public Message convertToMessage(ChangeRequest changeRequest) {
+        if (null == changeRequest) {
+            return null;
+        }
         String messageString = changeRequest.getMessage();
         try {
             return mapper.readValue(messageString, new TypeReference<Message<Document>>() {});
