@@ -40,7 +40,7 @@ public class SearchController {
         searchService.removeObjectFromIndex(new Document(new DocumentUri(documentId, tenantId)));
     }
 
-    @RequestMapping(value = "/{tenantId}/search/index",
+    @RequestMapping(value = "/{tenantId}/search",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public Collection<DocumentUri> searchDocument(
@@ -51,6 +51,31 @@ public class SearchController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request can't be parsed");
         }
         return searchService.search(tenantId, searchRequest);
+    }
+
+    @RequestMapping(value = "/{tenantId}/count",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public CountResponse countDocuments(
+            @PathVariable("tenantId") String tenantId,
+            @RequestParam(value = "request", required = false) String request) {
+        SearchRequest searchRequest = searchRequestConverter.buildFromString(request);
+        if (null == searchRequest) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request can't be parsed");
+        }
+        return new CountResponse(searchService.count(tenantId, searchRequest));
+    }
+
+    public class CountResponse {
+        private long count;
+
+        CountResponse(long count) {
+            this.count = count;
+        }
+
+        public long getCount() {
+            return count;
+        }
     }
 
 }
