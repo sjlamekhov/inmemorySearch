@@ -11,28 +11,30 @@ public class ConverterUtils {
         if (null == input || input.isEmpty()) {
             return input;
         }
+        int length = input.length();
         if (!checkIfParenthesisBalanced(input)) {
             return null;
         }
-        int leftPosition = 0, rightPosition = input.length() - 1;
-        for (int i = 0; i < input.length(); i++) {
+        int leftPosition = 0, rightPosition = length - 1;
+        for (int i = 0; i < length; i++) {
             if ('(' == input.charAt(i)) {
                 leftPosition = i;
             } else {
                 break;
             }
         }
-        for (int i = input.length() - 1; i >= 0; i--) {
+        for (int i = length - 1; i >= 0; i--) {
             if (')' == input.charAt(i)) {
                 rightPosition = i;
             } else {
                 break;
             }
         }
-        if (0 == leftPosition && input.length() - 1 == rightPosition) {
+        if (0 == leftPosition && length - 1 == rightPosition) {
             return input;
         }
-        return input.substring(leftPosition, rightPosition + 1);
+        int positionsToStrip = Math.min(leftPosition, length - rightPosition);
+        return input.substring(positionsToStrip, length - positionsToStrip);
     }
 
     public static boolean checkIfParenthesisBalanced(String input) {

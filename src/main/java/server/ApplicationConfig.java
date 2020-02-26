@@ -18,6 +18,7 @@ import platform.Platform;
 import platform.PlatformFactory;
 import platform.StatusService;
 import search.SearchService;
+import search.request.SearchRequestLimitations;
 
 import java.util.Properties;
 
@@ -53,6 +54,12 @@ public class ApplicationConfig {
     @DependsOn("platform")
     public SearchService<DocumentUri, Document> getSearchService() {
         return platform.getSearchService();
+    }
+
+    @Bean(name = "searchRequestLimitations")
+    @DependsOn("platform")
+    public SearchRequestLimitations getSearchRequestLimitations() {
+        return platform.getSearchRequestLimitations();
     }
 
     @Bean(name = "gossipServiceServer", destroyMethod = "close")

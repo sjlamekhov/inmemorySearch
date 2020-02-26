@@ -8,6 +8,8 @@ public class ConfigurationService {
     private boolean enableSync;
     private int serverPort;
     private List<String> clusterNodes;
+    private int maxSearchRequestDepth;
+    private int maxSearchRequestSize;
 
     private ConfigurationService() {
     }
@@ -22,6 +24,14 @@ public class ConfigurationService {
 
     public int getServerPort() {
         return serverPort;
+    }
+
+    public int getMaxSearchRequestDepth() {
+        return maxSearchRequestDepth;
+    }
+
+    public int getMaxSearchRequestSize() {
+        return maxSearchRequestSize;
     }
 
     public List<String> getClusterNodes() {
@@ -40,6 +50,10 @@ public class ConfigurationService {
 
         String clusterNodesFromProperties = properties.getProperty(ConfigurationPropertiesConstants.CLUSTER_NODES);
         result.clusterNodes = clusterNodesFromProperties != null ? new ArrayList<>(Arrays.asList(clusterNodesFromProperties.split(","))) : Collections.emptyList();
+
+        result.maxSearchRequestDepth = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.MAX_SEARCH_REQUEST_DEPTH, "8"));
+
+        result.maxSearchRequestSize = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.MAX_SEARCH_REQUEST_SIZE, "8"));
 
         return result;
     }

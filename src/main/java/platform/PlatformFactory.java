@@ -7,6 +7,7 @@ import networking.GossipServiceMultiClient;
 import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
+import search.request.SearchRequestLimitations;
 import search.SearchServiceFactory;
 import search.withChangesCollecting.ChangesCollectingSearchService;
 
@@ -34,11 +35,17 @@ public class PlatformFactory {
                 SearchServiceFactory.buildSearchService(configurationService)
         );
 
+        SearchRequestLimitations searchRequestLimitations = new SearchRequestLimitations(
+                configurationService.getMaxSearchRequestDepth(),
+                configurationService.getMaxSearchRequestSize()
+        );
+
         return Platform.Builder.newInstance()
                 .setConfigurationService(configurationService)
                 .setGossipServiceServer(gossipServiceServer)
                 .setGossipServiceMultiClient(gossipServiceMultiClient)
                 .setSearchService(searchService)
+                .setSearchRequestLimitations(searchRequestLimitations)
                 .setMessageConverter(new DocumentMessageConverterJson())
                 .setStatusServer(new StatusService(gossipServiceServer, gossipServiceMultiClient))
                 .build();

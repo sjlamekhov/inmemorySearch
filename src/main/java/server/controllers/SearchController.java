@@ -11,6 +11,7 @@ import search.SearchService;
 import search.request.SearchRequest;
 import search.request.SearchRequestConverter;
 import search.request.SearchRequestStringConverter;
+import search.request.SearchRequestLimitations;
 
 import java.util.Collection;
 
@@ -19,6 +20,9 @@ public class SearchController {
 
     @Autowired
     private SearchService<DocumentUri, Document> searchService;
+
+    @Autowired
+    private SearchRequestLimitations searchRequestLimitations;
 
     private SearchRequestConverter searchRequestConverter = new SearchRequestStringConverter();
 
@@ -50,6 +54,9 @@ public class SearchController {
         if (null == searchRequest) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request can't be parsed");
         }
+        if (!searchRequestLimitations.checkDepth(searchRequest) || !searchRequestLimitations.checkSize(searchRequest)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request does not pass depth or size check");
+        }
         return searchService.search(tenantId, searchRequest);
     }
 
@@ -62,6 +69,9 @@ public class SearchController {
         SearchRequest searchRequest = searchRequestConverter.buildFromString(request);
         if (null == searchRequest) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request can't be parsed");
+        }
+        if (!searchRequestLimitations.checkDepth(searchRequest) || !searchRequestLimitations.checkSize(searchRequest)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request does not pass depth or size check");
         }
         return new CountResponse(searchService.count(tenantId, searchRequest));
     }

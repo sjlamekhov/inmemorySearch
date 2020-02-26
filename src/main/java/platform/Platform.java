@@ -7,11 +7,13 @@ import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
 import search.withChangesCollecting.ChangesCollectingSearchService;
+import search.request.SearchRequestLimitations;
 
 public class Platform {
 
     private final ConfigurationService configurationService;
     private final ChangesCollectingSearchService<DocumentUri, Document> searchService;
+    private final SearchRequestLimitations searchRequestLimitations;
     private final GossipServiceServer gossipServiceServer;
     private final GossipServiceMultiClient gossipServiceMultiClient;
     private final MessageConverter messageConverter;
@@ -20,11 +22,13 @@ public class Platform {
     private Platform(
             ConfigurationService configurationService,
             ChangesCollectingSearchService<DocumentUri, Document> searchService,
+            SearchRequestLimitations searchRequestLimitations,
             GossipServiceServer gossipServiceServer,
             GossipServiceMultiClient gossipServiceMultiClient,
             MessageConverter messageConverter, StatusService statusService) {
         this.configurationService = configurationService;
         this.searchService = searchService;
+        this.searchRequestLimitations = searchRequestLimitations;
         this.gossipServiceServer = gossipServiceServer;
         this.gossipServiceMultiClient = gossipServiceMultiClient;
         this.messageConverter = messageConverter;
@@ -37,6 +41,10 @@ public class Platform {
 
     public ChangesCollectingSearchService<DocumentUri, Document> getSearchService() {
         return searchService;
+    }
+
+    public SearchRequestLimitations getSearchRequestLimitations() {
+        return searchRequestLimitations;
     }
 
     public GossipServiceServer getGossipServiceServer() {
@@ -57,6 +65,7 @@ public class Platform {
 
     public static class Builder {
         private ChangesCollectingSearchService<DocumentUri, Document> searchService;
+        private SearchRequestLimitations searchRequestLimitations;
         private GossipServiceServer gossipServiceServer;
         private GossipServiceMultiClient gossipServiceMultiClient;
         private MessageConverter messageConverter;
@@ -64,6 +73,11 @@ public class Platform {
         private StatusService statusService;
 
         protected Builder() {
+        }
+
+        public Builder setSearchRequestLimitations(SearchRequestLimitations searchRequestLimitations) {
+            this.searchRequestLimitations = searchRequestLimitations;
+            return this;
         }
 
         public Builder setSearchService(ChangesCollectingSearchService<DocumentUri, Document> searchService) {
@@ -104,6 +118,7 @@ public class Platform {
             return new Platform(
                     configurationService,
                     searchService,
+                    searchRequestLimitations,
                     gossipServiceServer,
                     gossipServiceMultiClient,
                     messageConverter,
