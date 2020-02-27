@@ -18,17 +18,20 @@ public class StatusController {
     private StatusService statusService;
 
     @RequestMapping(value = "/status/serverStatus",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public GossipServiceServer.ServerStatus getServerStatus() {
         return statusService.getServerStatus();
     }
 
     @RequestMapping(value = "/status/clientsStatus",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public Map<String, GossipServiceClient.ClientStatus> getClientStatus() {
         return statusService.getClientStatus();
     }
 
+    @RequestMapping(value = "/status/memoryStatus",
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public Map<String, Long> getMemoryStatus() {
+        return statusService.getMemoryStatus();
+    }
 }
