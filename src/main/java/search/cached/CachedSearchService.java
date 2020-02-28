@@ -2,6 +2,7 @@ package search.cached;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
+import search.optimizer.SearchRequestOptimizer;
 import search.request.SearchRequest;
 import search.SearchService;
 
@@ -15,6 +16,11 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     public CachedSearchService(SearchService<U, T> searchService) {
         this.searchService = searchService;
         this.searchCache = new SearchCache<>(sr -> searchService.search(null, sr));
+    }
+
+    public CachedSearchService(SearchService<U, T> searchService, SearchRequestOptimizer searchRequestOptimizer) {
+        this.searchService = searchService;
+        this.searchCache = new SearchCache<>(sr -> searchService.search(null, sr), searchRequestOptimizer);
     }
 
     @Override

@@ -11,8 +11,7 @@ import java.util.function.Function;
 
 public class SearchCache<U extends AbstractObjectUri, T extends AbstractObject> {
 
-    public final int MAX_CACHE_SIZE = 16;
-    private final int MAX_RESULTS_SIZE = 128;
+    public final int MAX_CACHE_SIZE = 1024;
     private final int MAX_REQUESTS_TO_REMOVE = 1;
 
     private final ApplianceChecker applianceChecker;
@@ -23,6 +22,13 @@ public class SearchCache<U extends AbstractObjectUri, T extends AbstractObject> 
     public SearchCache(Function<SearchRequest, Collection<U>> loader) {
         this.applianceChecker = new ApplianceChecker();
         this.searchRequestOptimizer = new PlainSearchRequestOptimizer();
+        this.cachedRequests = new HashMap<>();
+        this.loader = loader;
+    }
+
+    public SearchCache(Function<SearchRequest, Collection<U>> loader, SearchRequestOptimizer searchRequestOptimizer) {
+        this.applianceChecker = new ApplianceChecker();
+        this.searchRequestOptimizer = searchRequestOptimizer;
         this.cachedRequests = new HashMap<>();
         this.loader = loader;
     }
