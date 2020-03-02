@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class SearchCache<U extends AbstractObjectUri, T extends AbstractObject> {
 
     public final int MAX_CACHE_SIZE = 1024;
-    private final int MAX_REQUESTS_TO_REMOVE = 1;
+    private final int MAX_REQUESTS_TO_REMOVE = MAX_CACHE_SIZE / 8;
 
     private final ApplianceChecker applianceChecker;
     private final SearchRequestOptimizer searchRequestOptimizer;

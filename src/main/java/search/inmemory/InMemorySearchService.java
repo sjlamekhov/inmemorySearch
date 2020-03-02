@@ -110,13 +110,20 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         String attributeToSearch = searchRequest.getAttributeToSearch();
         String valueToSearch = searchRequest.getValueToSearch();
 
+        if (conditionType == ConditionType.ALL) {
+            return new HashSet<>(reverseAttributeIndex.keySet());
+        }
+
+        Set<U> result = new HashSet<>();
         TreeMap<String, Set<U>> attributeIndex = attributeIndexes.get(attributeToSearch);
-        if (attributeIndex == null && conditionType != ConditionType.ALL) {
+        if (attributeIndex == null) {
             return Collections.emptySet();
         }
-        Set<U> result = new HashSet<>();
         if (conditionType == ConditionType.EQ) {
-            result.addAll(attributeIndex.get(valueToSearch));
+            Set<U> innerResult = attributeIndex.get(valueToSearch);
+            if (null != innerResult && !innerResult.isEmpty()) {
+                result.addAll(innerResult);
+            }
         } else if (conditionType == ConditionType.NE) {
             attributeIndex.forEach((key, value) -> {
                 if (!Objects.equals(valueToSearch, key)) {
@@ -129,8 +136,6 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         } else if(conditionType == ConditionType.LT) {
             Map<String, Set<U>> map = attributeIndex.headMap(valueToSearch, false);
             result.addAll(map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet()));
-        } else if (conditionType == ConditionType.ALL) {
-            result.addAll(reverseAttributeIndex.keySet());
         } else {
             throw new UnsupportedOperationException();
         }

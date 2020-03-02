@@ -92,7 +92,7 @@ public class CachedInMemorySearchServiceTest extends AbstractSearchServiceTest {
                 .setAttributeToSearch("attribute")
                 .build());
         Set<SearchRequest> searchRequestAfterRebuild = searchCache.getCachedRequests();
-        Assert.assertEquals(searchCache.MAX_CACHE_SIZE, searchRequestAfterRebuild.size());
+        Assert.assertTrue(searchCache.MAX_CACHE_SIZE >= searchRequestAfterRebuild.size());
         Assert.assertFalse(searchRequestAfterRebuild.equals(searchRequestBeforeRebuild));
     }
 
