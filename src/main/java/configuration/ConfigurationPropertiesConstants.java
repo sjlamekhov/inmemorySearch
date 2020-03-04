@@ -8,4 +8,8 @@ public interface ConfigurationPropertiesConstants {
     String CLUSTER_NODES = "clusterNodes";
     String MAX_SEARCH_REQUEST_DEPTH = "maxSearchRequestDepth";
     String MAX_SEARCH_REQUEST_SIZE = "maxSearchRequestSize";
+
+    String OPERATIONAL_MODE = "operationalMode";
+    String RELIABILITY = "reliability";
+    String SHARDING = "sharding";
 }
