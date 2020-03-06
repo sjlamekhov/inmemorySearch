@@ -14,13 +14,16 @@ public class SearchServiceUtils {
         result.add(SearchRequest.Builder.newInstance()
                 .setAttributeToSearch(searchRequest.getAttributeToSearch())
                 .setConditionType(searchRequest.getConditionType())
-                .setValueToSearch(searchRequest.getAttributeToSearch())
+                .setValueToSearch(searchRequest.getValueToSearch())
                 .build());
-        for (SearchRequest andRequest : searchRequest.getAndRequests()) {
-            result.addAll(collectAllSearchRequests(andRequest));
-        }
-        for (SearchRequest orRequest : searchRequest.getOrRequests()) {
-            result.addAll(collectAllSearchRequests(orRequest));
+        if (!searchRequest.getAndRequests().isEmpty()) {
+            for (SearchRequest andRequest : searchRequest.getAndRequests()) {
+                result.addAll(collectAllSearchRequests(andRequest));
+            }
+        } else {
+            for (SearchRequest orRequest : searchRequest.getOrRequests()) {
+                result.addAll(collectAllSearchRequests(orRequest));
+            }
         }
         return result;
     }
