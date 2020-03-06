@@ -9,6 +9,8 @@ import search.SearchService;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static search.SearchServiceUtils.combineAnd;
+
 //TODO: locks and concurrency stuff
 public class InMemorySearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
@@ -85,24 +87,6 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             }
         }
         return result;
-    }
-
-    private Collection<U> combineAnd(Collection<U> leafResult, List<Collection<U>> results) {
-        int targetSize = results.size() + 1;
-        Collection<U> result = new HashSet<>();
-        Map<U, Long> urisAndCounts = new HashMap<>();
-        countUris(urisAndCounts, leafResult);
-        results.forEach(i -> countUris(urisAndCounts, i));
-        for (Map.Entry<U, Long> count : urisAndCounts.entrySet()) {
-            if (count.getValue() == targetSize) {
-                result.add(count.getKey());
-            }
-        }
-        return result;
-    }
-
-    private void countUris(Map<U, Long> counts, Collection<U> uris) {
-        uris.forEach(i -> counts.merge(i, 1L, (a,b) -> a + b));
     }
 
     private Set<U> searchLeaf(String tenantId, SearchRequest searchRequest) {

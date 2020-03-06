@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ShardingService<U extends AbstractObjectUri> {
+public abstract class ShardingService<U extends AbstractObjectUri, T extends AbstractObject> {
 
     private final List<String> clusterNodes;
     private final SearchClient searchClient;
@@ -23,4 +23,5 @@ public abstract class ShardingService<U extends AbstractObjectUri> {
 
     public abstract Map<SearchRequest, Collection<U>> executeShardedRequests(Collection<SearchRequest> searchRequest);
 
+    public abstract void removeObjectFromIndex(T object);
 }

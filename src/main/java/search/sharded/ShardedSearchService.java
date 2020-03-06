@@ -3,19 +3,34 @@ package search.sharded;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.SearchService;
+import search.optimizer.SearchRequestOptimizer;
+import search.optimizer.TransparentRequestOptimizer;
 import search.request.SearchRequest;
 import sharding.ShardingService;
 
-import java.util.Collection;
+import java.util.*;
+
+import static search.SearchServiceUtils.collectAllSearchRequests;
+import static search.SearchServiceUtils.combinedResult;
 
 public class ShardedSearchService <U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final SearchService<U, T> searchService;
-    private final ShardingService<U> shardingService;
+    private final ShardingService<U, T> shardingService;
+    private final SearchRequestOptimizer searchRequestOptimizer;
 
-    public ShardedSearchService(SearchService<U, T> searchService, ShardingService<U> shardingService) {
+    public ShardedSearchService(SearchService<U, T> searchService, ShardingService<U, T> shardingService) {
         this.searchService = searchService;
         this.shardingService = shardingService;
+        this.searchRequestOptimizer = new TransparentRequestOptimizer();
+    }
+
+    public ShardedSearchService(SearchService<U, T> searchService,
+                                ShardingService<U, T> shardingService,
+                                SearchRequestOptimizer searchRequestOptimizer) {
+        this.searchService = searchService;
+        this.shardingService = shardingService;
+        this.searchRequestOptimizer = searchRequestOptimizer;
     }
 
     @Override
@@ -26,6 +41,7 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     @Override
     public void removeObjectFromIndex(T object) {
         searchService.removeObjectFromIndex(object);
+        shardingService.removeObjectFromIndex(object);
     }
 
     //TODO: decide what to do with it
@@ -34,19 +50,24 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
         return searchService.typeAheadSearch(tenantId, field, prefix);
     }
 
-    //TODO: design
+    //TODO: add optimizer logic here
     @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
-        //collect responses for every sub request locally
-        //collect responses for every sub request from sharding nodes
-        //combine and return
-        return null;
+        if (null == searchRequestOptimizer.optimize(searchRequest)) {
+            return Collections.emptySet();
+        }
+        Collection<SearchRequest> searchRequestsToFetch = collectAllSearchRequests(searchRequest);
+        Map<SearchRequest, Collection<U>> fromSharding = shardingService.executeShardedRequests(searchRequestsToFetch);
+        Map<SearchRequest, Collection<U>> fromCurrentMachine = new HashMap<>();
+        for (SearchRequest searchRequestPart : searchRequestsToFetch) {
+            fromCurrentMachine.put(searchRequestPart, searchService.search(tenantId, searchRequestPart));
+        }
+        return combinedResult(searchRequest, fromSharding, fromCurrentMachine);
     }
 
-    //TODO: decide what to do with it
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
-        return 0;
+        return search(tenantId, searchRequest).size();
     }
 
     @Override
@@ -58,4 +79,5 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     public void close() {
         searchService.close();
     }
+
 }
