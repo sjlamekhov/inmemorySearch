@@ -50,7 +50,6 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
         return searchService.typeAheadSearch(tenantId, field, prefix);
     }
 
-    //TODO: add optimizer logic here
     @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         if (null == searchRequestOptimizer.optimize(searchRequest)) {

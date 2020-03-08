@@ -47,6 +47,14 @@ public class SearchRequest {
         return orRequests;
     }
 
+    public SearchRequest getMainPart() {
+        return SearchRequest.Builder.newInstance()
+                .setAttributeToSearch(attributeToSearch)
+                .setConditionType(conditionType)
+                .setValueToSearch(valueToSearch)
+                .build();
+    }
+
     public static class Builder {
 
         private ConditionType conditionType;

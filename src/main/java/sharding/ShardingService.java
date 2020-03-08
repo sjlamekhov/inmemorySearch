@@ -2,7 +2,6 @@ package sharding;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import objects.DocumentUri;
 import search.request.SearchRequest;
 
 import java.util.Collection;
