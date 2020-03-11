@@ -3,24 +3,29 @@ package sharding;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.request.SearchRequest;
+import sharding.client.SearchClient;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public abstract class ShardingService<U extends AbstractObjectUri, T extends AbstractObject> {
+public class ShardingService<U extends AbstractObjectUri, T extends AbstractObject> {
 
-    private final List<String> clusterNodes;
     private final SearchClient searchClient;
 
-    public ShardingService(List<String> clusterNodes, SearchClient searchClient) {
-        this.clusterNodes = clusterNodes;
+    public ShardingService(SearchClient searchClient) {
         this.searchClient = searchClient;
     }
 
-    public abstract Map<SearchRequest, Collection<U>> executeShardedRequest(SearchRequest searchRequest);
+    public Map<SearchRequest, Collection<U>> executeShardedRequest(String tenantId, SearchRequest searchRequest) {
+        return executeShardedRequests(tenantId, Collections.singleton(searchRequest));
+    }
 
-    public abstract Map<SearchRequest, Collection<U>> executeShardedRequests(Collection<SearchRequest> searchRequest);
+    //TODO: add multithread mode
+    public Map<SearchRequest, Collection<U>> executeShardedRequests(String tenantId, Collection<SearchRequest> searchRequests) {
+        Map<SearchRequest, Collection<U>> result = new HashMap<>();
+        for (SearchRequest searchRequest : searchRequests) {
+            result.put(searchRequest, searchClient.executeSearchRequest(tenantId, searchRequest));
+        }
+        return result;
+    }
 
-    public abstract void removeObjectFromIndex(T object);
 }

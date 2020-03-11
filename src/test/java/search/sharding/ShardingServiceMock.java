@@ -2,8 +2,6 @@ package search.sharding;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import objects.Document;
-import objects.DocumentUri;
 import search.request.SearchRequest;
 import sharding.ShardingService;
 
@@ -14,7 +12,7 @@ public class ShardingServiceMock<U extends AbstractObjectUri, T extends Abstract
     private final Map<SearchRequest, Set<U>> searchRequestAndDocuments;
 
     public ShardingServiceMock() {
-        super(Collections.emptyList(), null);
+        super( null);
         this.searchRequestAndDocuments = new HashMap<>();
     }
 
@@ -28,22 +26,17 @@ public class ShardingServiceMock<U extends AbstractObjectUri, T extends Abstract
     }
 
     @Override
-    public Map<SearchRequest, Collection<U>> executeShardedRequest(SearchRequest searchRequest) {
-        return executeShardedRequests(Collections.singleton(searchRequest));
+    public Map<SearchRequest, Collection<U>> executeShardedRequest(String tenantId, SearchRequest searchRequest) {
+        return executeShardedRequests(tenantId, Collections.singleton(searchRequest));
     }
 
     @Override
-    public Map<SearchRequest, Collection<U>> executeShardedRequests(Collection<SearchRequest> searchRequests) {
+    public Map<SearchRequest, Collection<U>> executeShardedRequests(String tenantId, Collection<SearchRequest> searchRequests) {
         Map<SearchRequest, Collection<U>> result = new HashMap<>();
         for (SearchRequest searchRequest : searchRequests) {
             result.put(searchRequest, searchRequestAndDocuments.getOrDefault(searchRequest, Collections.emptySet()));
         }
         return result;
-    }
-
-    @Override
-    public void removeObjectFromIndex(T object) {
-        searchRequestAndDocuments.values().forEach(i -> i.remove(object.getUri()));
     }
 
     public void dropIndexes() {

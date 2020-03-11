@@ -46,7 +46,7 @@ public class SearchController {
 
     @RequestMapping(value = "/{tenantId}/search",
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public Collection<DocumentUri> searchDocument(
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "request", required = false) String request) {

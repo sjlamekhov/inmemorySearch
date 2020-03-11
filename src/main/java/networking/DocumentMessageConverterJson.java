@@ -2,7 +2,6 @@ package networking;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.channel.socket.oio.DefaultOioSocketChannelConfig;
 import networking.protobuf.ChangeRequest;
 import objects.Document;
 

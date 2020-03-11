@@ -41,7 +41,6 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     @Override
     public void removeObjectFromIndex(T object) {
         searchService.removeObjectFromIndex(object);
-        shardingService.removeObjectFromIndex(object);
     }
 
     //TODO: decide what to do with it
@@ -56,7 +55,7 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
             return Collections.emptySet();
         }
         Collection<SearchRequest> searchRequestsToFetch = collectAllSearchRequests(searchRequest);
-        Map<SearchRequest, Collection<U>> fromSharding = shardingService.executeShardedRequests(searchRequestsToFetch);
+        Map<SearchRequest, Collection<U>> fromSharding = shardingService.executeShardedRequests(tenantId, searchRequestsToFetch);
         Map<SearchRequest, Collection<U>> fromCurrentMachine = new HashMap<>();
         for (SearchRequest searchRequestPart : searchRequestsToFetch) {
             fromCurrentMachine.put(searchRequestPart, searchService.search(tenantId, searchRequestPart));
