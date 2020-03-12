@@ -4,30 +4,24 @@ import java.util.*;
 
 public class ConfigurationService {
 
-
-
-    enum OperationMode {
+    public enum OperationMode {
         reliability,
         sharding;
     }
 
     private List<String> tenants;
-    private boolean enableSync;
     private int serverPort;
     private List<String> clusterNodes;
     private int maxSearchRequestDepth;
     private int maxSearchRequestSize;
     private OperationMode operationalMode;
+    private boolean useCache;
 
     private ConfigurationService() {
     }
 
     public List<String> getTenants() {
         return Collections.unmodifiableList(tenants);
-    }
-
-    public boolean isEnableSync() {
-        return enableSync;
     }
 
     public int getServerPort() {
@@ -50,13 +44,15 @@ public class ConfigurationService {
         return operationalMode;
     }
 
+    public boolean isUseCache() {
+        return useCache;
+    }
+
     public static ConfigurationService buildConfigurationService(Properties properties) {
         ConfigurationService result = new ConfigurationService();
 
         String tenantsFromProperties = properties.getProperty(ConfigurationPropertiesConstants.TENANTS);
         result.tenants = tenantsFromProperties != null ? new ArrayList<>(Arrays.asList(tenantsFromProperties.split(","))) : Collections.emptyList();
-
-        result.enableSync = Boolean.valueOf(properties.getProperty(ConfigurationPropertiesConstants.ENABLE_SYNC, "false"));
 
         result.serverPort = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.SERVER_PORT, "6060"));
 
@@ -68,6 +64,8 @@ public class ConfigurationService {
         result.maxSearchRequestSize = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.MAX_SEARCH_REQUEST_SIZE, "8"));
 
         result.operationalMode = OperationMode.valueOf(properties.getProperty(ConfigurationPropertiesConstants.OPERATIONAL_MODE, ConfigurationPropertiesConstants.RELIABILITY));
+
+        result.useCache = Boolean.valueOf(properties.getProperty(ConfigurationPropertiesConstants.USE_CACHE, "false"));
 
         return result;
     }

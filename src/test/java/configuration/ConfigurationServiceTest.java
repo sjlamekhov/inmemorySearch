@@ -16,7 +16,8 @@ public class ConfigurationServiceTest {
         Assert.assertTrue(configurationService.getClusterNodes().isEmpty());
         Assert.assertEquals(6060, configurationService.getServerPort());
         Assert.assertTrue(configurationService.getTenants().isEmpty());
-        Assert.assertEquals(false, configurationService.isEnableSync());
+        Assert.assertEquals(ConfigurationService.OperationMode.reliability, configurationService.getOperationalMode());
+        Assert.assertFalse(configurationService.isUseCache());
     }
 
     @Test
@@ -29,7 +30,7 @@ public class ConfigurationServiceTest {
         Assert.assertEquals(7777, configurationService.getServerPort());
         Assert.assertEquals(2, configurationService.getTenants().size());
         Assert.assertTrue(configurationService.getTenants().containsAll(Arrays.asList("tenantA", "tenantB")));
-        Assert.assertEquals(true, configurationService.isEnableSync());
+        Assert.assertEquals(ConfigurationService.OperationMode.sharding, configurationService.getOperationalMode());
     }
 
 

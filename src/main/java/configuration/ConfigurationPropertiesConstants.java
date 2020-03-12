@@ -3,7 +3,6 @@ package configuration;
 public interface ConfigurationPropertiesConstants {
 
     String TENANTS = "tenants";
-    String ENABLE_SYNC = "enableSync";
     String SERVER_PORT = "serverPort";
     String CLUSTER_NODES = "clusterNodes";
     String MAX_SEARCH_REQUEST_DEPTH = "maxSearchRequestDepth";
@@ -12,4 +11,6 @@ public interface ConfigurationPropertiesConstants {
     String OPERATIONAL_MODE = "operationalMode";
     String RELIABILITY = "reliability";
     String SHARDING = "sharding";
+
+    String USE_CACHE = "useCache";
 }

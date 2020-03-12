@@ -112,28 +112,30 @@ public class ApplicationConfig {
         executor.setMaxPoolSize(16);
         executor.setQueueCapacity(24);
         executor.initialize();
-        executor.execute(() -> {
-            try {
-                platform.getGossipServiceMultiClient().init();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        executor.execute(() -> {
-            try {
-                platform.getGossipServiceServer().init();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        executor.execute(() -> {
-            try {
-                networkDispatcher.receiveAndSendMessages(false);
-                Thread.sleep(100000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        if (platform.getConfigurationService().getOperationalMode() == ConfigurationService.OperationMode.reliability) {
+            executor.execute(() -> {
+                try {
+                    platform.getGossipServiceMultiClient().init();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            executor.execute(() -> {
+                try {
+                    platform.getGossipServiceServer().init();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            executor.execute(() -> {
+                try {
+                    networkDispatcher.receiveAndSendMessages(false);
+                    Thread.sleep(100000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
         return executor;
     }
 
