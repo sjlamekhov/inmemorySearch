@@ -25,14 +25,6 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
         this.searchRequestOptimizer = new TransparentRequestOptimizer();
     }
 
-    public ShardedSearchService(SearchService<U, T> searchService,
-                                ShardingService<U, T> shardingService,
-                                SearchRequestOptimizer searchRequestOptimizer) {
-        this.searchService = searchService;
-        this.shardingService = shardingService;
-        this.searchRequestOptimizer = searchRequestOptimizer;
-    }
-
     @Override
     public void addObjectToIndex(T object) {
         searchService.addObjectToIndex(object);

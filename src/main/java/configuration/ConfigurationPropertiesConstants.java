@@ -3,7 +3,7 @@ package configuration;
 public interface ConfigurationPropertiesConstants {
 
     String TENANTS = "tenants";
-    String SERVER_PORT = "serverPort";
+    String GOSSIP_SERVER_PORT = "gossipServerPort";
     String CLUSTER_NODES = "clusterNodes";
     String MAX_SEARCH_REQUEST_DEPTH = "maxSearchRequestDepth";
     String MAX_SEARCH_REQUEST_SIZE = "maxSearchRequestSize";

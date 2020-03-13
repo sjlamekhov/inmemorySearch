@@ -10,7 +10,7 @@ public class ConfigurationService {
     }
 
     private List<String> tenants;
-    private int serverPort;
+    private int gossipServerPort;
     private List<String> clusterNodes;
     private int maxSearchRequestDepth;
     private int maxSearchRequestSize;
@@ -24,8 +24,8 @@ public class ConfigurationService {
         return Collections.unmodifiableList(tenants);
     }
 
-    public int getServerPort() {
-        return serverPort;
+    public int getGossipServerPort() {
+        return gossipServerPort;
     }
 
     public int getMaxSearchRequestDepth() {
@@ -54,7 +54,7 @@ public class ConfigurationService {
         String tenantsFromProperties = properties.getProperty(ConfigurationPropertiesConstants.TENANTS);
         result.tenants = tenantsFromProperties != null ? new ArrayList<>(Arrays.asList(tenantsFromProperties.split(","))) : Collections.emptyList();
 
-        result.serverPort = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.SERVER_PORT, "6060"));
+        result.gossipServerPort = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.GOSSIP_SERVER_PORT, "6060"));
 
         String clusterNodesFromProperties = properties.getProperty(ConfigurationPropertiesConstants.CLUSTER_NODES);
         result.clusterNodes = clusterNodesFromProperties != null ? new ArrayList<>(Arrays.asList(clusterNodesFromProperties.split(","))) : Collections.emptyList();

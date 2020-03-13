@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO: cover by tests
 public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final Map<String, SearchService<U, T>> searchMapping;

@@ -1,7 +1,5 @@
 package search;
 
-import objects.AbstractObject;
-import objects.AbstractObjectUri;
 import objects.Document;
 import objects.DocumentUri;
 import org.junit.Assert;

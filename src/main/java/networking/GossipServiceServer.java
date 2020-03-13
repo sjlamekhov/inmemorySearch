@@ -1,6 +1,5 @@
 package networking;
 
-import io.grpc.InternalChannelz;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import networking.protobuf.ChangeRequest;
@@ -17,10 +16,6 @@ public class GossipServiceServer {
     private Server server;
     private int port;
     private Queue<ChangeRequest> incomingQueue;
-
-    public GossipServiceServer() {
-        this(DEFAULT_PORT);
-    }
 
     public GossipServiceServer(int port) {
         this.port = port;

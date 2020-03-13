@@ -12,10 +12,7 @@ import search.inmemory.InMemorySearchService;
 import search.request.SearchRequest;
 import search.sharded.ShardedSearchService;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ShardingSearchServiceTest extends AbstractSearchServiceTest {
 
@@ -30,7 +27,7 @@ public class ShardingSearchServiceTest extends AbstractSearchServiceTest {
     }
 
     @Test
-    public void shardingTest() {
+    public void shardingAndLocalTest() {
         SearchRequest searchRequest = SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
                 .setConditionType(ConditionType.EQ)
@@ -49,6 +46,25 @@ public class ShardingSearchServiceTest extends AbstractSearchServiceTest {
         Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
         Assert.assertEquals(2, searchResult.size());
         Assert.assertTrue(searchResult.containsAll(Arrays.asList(localDocument.getUri(), forShardingDocument.getUri())));
+    }
+
+    @Test
+    public void shardingOnlyTest() {
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.EQ)
+                .setValueToSearch("value")
+                .build();
+
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "value");
+        Document forShardingDocument = new Document(new DocumentUri(tenantId), attributes);
+
+        shardingServiceMock.addSearchRequestAndResult(searchRequest, forShardingDocument);
+
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
+        Assert.assertEquals(1, searchResult.size());
+        Assert.assertTrue(searchResult.containsAll(Collections.singletonList(forShardingDocument.getUri())));
     }
 
     @After

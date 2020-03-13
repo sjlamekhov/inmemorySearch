@@ -18,7 +18,7 @@ public class PlatformFactory {
     public static Platform buildPlatform(Properties properties) {
         ConfigurationService configurationService = ConfigurationService.buildConfigurationService(properties);
 
-        GossipServiceServer gossipServiceServer = new GossipServiceServer(configurationService.getServerPort());
+        GossipServiceServer gossipServiceServer = new GossipServiceServer(configurationService.getGossipServerPort());
 
         GossipServiceMultiClient gossipServiceMultiClient = new GossipServiceMultiClient();
         for (String clusterNodeAddress : configurationService.getClusterNodes()) {

@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import utils.TestUtils;
 
 import java.util.Map;
 
@@ -19,11 +20,13 @@ public class StatusControllerTest {
     private StatusController statusController;
 
     @Test
-    public void serverStatusTest() {
+    public void serverStatusTest() throws Exception {
+        TestUtils.waitFor(statusController.getServerStatus()::isStarted);
         GossipServiceServer.ServerStatus serverStatus = statusController.getServerStatus();
         Assert.assertNotNull(serverStatus);
         Assert.assertEquals(7070, serverStatus.getPort());
         Assert.assertEquals(0, serverStatus.getQueueSize());
+        Assert.assertTrue(serverStatus.isStarted());
     }
 
     @Test
