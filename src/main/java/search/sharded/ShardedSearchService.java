@@ -35,12 +35,6 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
         searchService.removeObjectFromIndex(object);
     }
 
-    //TODO: decide what to do with it
-    @Override
-    public Collection<U> typeAheadSearch(String tenantId, String field, String prefix) {
-        return searchService.typeAheadSearch(tenantId, field, prefix);
-    }
-
     @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         if (null == searchRequestOptimizer.optimize(searchRequest)) {

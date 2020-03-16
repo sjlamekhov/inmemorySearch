@@ -57,11 +57,6 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     }
 
     @Override
-    public Collection<U> typeAheadSearch(String tenantId, String field, String prefix) {
-        return searchService.typeAheadSearch(tenantId, field, prefix);
-    }
-
-    @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         return searchService.search(tenantId, searchRequest);
     }

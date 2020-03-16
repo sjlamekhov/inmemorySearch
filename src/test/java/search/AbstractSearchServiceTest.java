@@ -272,11 +272,19 @@ public abstract class AbstractSearchServiceTest {
         Document document = new Document(documentUri, attributes);
         searchService.addObjectToIndex(document);
 
-        Collection<DocumentUri> searchResult = searchService.typeAheadSearch(tenantId, "attribute", "value");
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.STWITH)
+                .setValueToSearch("value")
+                .build());
         Assert.assertEquals(1, searchResult.size());
         Assert.assertTrue(searchResult.contains(documentUri));
 
-        searchResult = searchService.typeAheadSearch(tenantId, "attribute", "valueNotExisting");
+        searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.STWITH)
+                .setValueToSearch("valueNotExisting")
+                .build());
         Assert.assertEquals(0, searchResult.size());
     }
 
@@ -295,13 +303,21 @@ public abstract class AbstractSearchServiceTest {
         Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
         searchService.addObjectToIndex(documentForDeletion);
 
-        Collection<DocumentUri> searchResult = searchService.typeAheadSearch(tenantId, "attribute", "value");
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.STWITH)
+                .setValueToSearch("value")
+                .build());
         Assert.assertEquals(2, searchResult.size());
         Assert.assertTrue(searchResult.containsAll(Arrays.asList(documentUriForDeletion, documentUri)));
 
         searchService.removeObjectFromIndex(documentForDeletion);
 
-        searchResult = searchService.typeAheadSearch(tenantId, "attribute", "valuel");
+        searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.STWITH)
+                .setValueToSearch("valuel")
+                .build());
         Assert.assertEquals(1, searchResult.size());
         Assert.assertTrue(searchResult.contains(documentUri));
     }

@@ -5,5 +5,6 @@ public enum  ConditionType {
     GT, //greater than
     LT, //lower than
     NE, //not equals
+    STWITH, //startsWith
     ALL
 }

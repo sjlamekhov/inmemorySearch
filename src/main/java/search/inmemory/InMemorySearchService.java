@@ -98,6 +98,10 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             return new HashSet<>(reverseAttributeIndex.keySet());
         }
 
+        if (conditionType == ConditionType.STWITH) {
+            return searchByStartsWith(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
+        }
+
         Set<U> result = new HashSet<>();
         TreeMap<String, Set<U>> attributeIndex = attributeIndexes.get(attributeToSearch);
         if (attributeIndex == null) {
@@ -126,19 +130,18 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         return result;
     }
 
-    @Override
-    public long count(String tenantId, SearchRequest searchRequest) {
-        return search(tenantId, searchRequest).size();
-    }
-
-    @Override
-    public Collection<U> typeAheadSearch(String tenantId, String field, String prefix) {
+    private Set<U> searchByStartsWith(String field, String prefix) {
         Trie<U> prefixSearchIndex = attributePrefixIndexes.get(field);
         if (prefixSearchIndex == null) {
             return Collections.emptySet();
         }
         prefix = prefix.toLowerCase();
-        return prefixSearchIndex.getUrisByStartsWith(prefix);
+        return new HashSet<>(prefixSearchIndex.getUrisByStartsWith(prefix));
+    }
+
+    @Override
+    public long count(String tenantId, SearchRequest searchRequest) {
+        return search(tenantId, searchRequest).size();
     }
 
     @Override

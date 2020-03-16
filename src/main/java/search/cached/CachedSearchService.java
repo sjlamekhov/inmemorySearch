@@ -36,11 +36,6 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     }
 
     @Override
-    public Collection<U> typeAheadSearch(String tenantId, String field, String prefix) {
-        return searchService.typeAheadSearch(tenantId, field, prefix);
-    }
-
-    @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         return searchCache.getCached(searchRequest);
     }

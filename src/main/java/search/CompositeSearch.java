@@ -39,11 +39,6 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
     }
 
     @Override
-    public Collection<U> typeAheadSearch(String tenantId, String field, String prefix) {
-        return getSearchServiceInternal(tenantId).typeAheadSearch(tenantId, field, prefix);
-    }
-
-    @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         return getSearchServiceInternal(tenantId).search(tenantId, searchRequest);
     }
