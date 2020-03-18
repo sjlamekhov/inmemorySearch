@@ -8,6 +8,7 @@ import search.request.SearchRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 public class PlainSearchRequestOptimizer implements SearchRequestOptimizer {
@@ -73,32 +74,66 @@ public class PlainSearchRequestOptimizer implements SearchRequestOptimizer {
             }
             Map<ConditionType, Set<SearchRequest>> groupedByConditionType = requests.stream()
                     .collect(Collectors.groupingBy(SearchRequest::getConditionType, toSet()));
-            //ConditionType.EQ
-            Set<SearchRequest> eqRequests = groupedByConditionType.get(ConditionType.EQ);
-            if (null != eqRequests && eqRequests.size() > 1) {
-                Set<String> values = eqRequests.stream().map(SearchRequest::getValueToSearch).collect(toSet());
-                if (values.size() > 1) {
-                    return false;   //there are search requests with different EQ values on same level
-                }
+
+            //ConditionType.STWITH
+            if (!checkStwithCompatibility(groupedByConditionType.get(ConditionType.STWITH))) {
+                return false;
             }
+
+            //ConditionType.EQ
+            if (!checkEqCompatilibility(groupedByConditionType.get(ConditionType.EQ))) {
+                return false;
+            }
+
             //ConditionType.LT && ConditionType.GT
-            Set<SearchRequest> ltRequests = groupedByConditionType.get(ConditionType.LT);
-            Set<SearchRequest> gtRequests = groupedByConditionType.get(ConditionType.GT);
-            if ((null != ltRequests && !ltRequests.isEmpty()) && (null != gtRequests && !gtRequests.isEmpty())) {
-                SortedSet<String> ltValues = ltRequests.stream()
-                        .map(SearchRequest::getValueToSearch).distinct()
-                        .collect(Collectors.toCollection(TreeSet::new));
-                SortedSet<String> gtValues = gtRequests.stream()
-                        .map(SearchRequest::getValueToSearch).distinct()
-                        .collect(Collectors.toCollection(TreeSet::new));
-                //at least one GT value should be lower than at least one LT value
-                boolean intersectionCanExist = gtValues.last().compareTo(ltValues.first()) < 0;
-                if (!intersectionCanExist) {
+            if (!checkGtLtCompatibility(
+                    groupedByConditionType.get(ConditionType.LT),
+                    groupedByConditionType.get(ConditionType.GT))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkGtLtCompatibility(Set<SearchRequest> ltRequests, Set<SearchRequest> gtRequests) {
+        if ((null != ltRequests && !ltRequests.isEmpty()) && (null != gtRequests && !gtRequests.isEmpty())) {
+            SortedSet<String> ltValues = ltRequests.stream()
+                    .map(SearchRequest::getValueToSearch).distinct()
+                    .collect(Collectors.toCollection(TreeSet::new));
+            SortedSet<String> gtValues = gtRequests.stream()
+                    .map(SearchRequest::getValueToSearch).distinct()
+                    .collect(Collectors.toCollection(TreeSet::new));
+            //at least one GT value should be lower than at least one LT value
+            boolean intersectionCanExist = gtValues.last().compareTo(ltValues.first()) < 0;
+            if (!intersectionCanExist) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkEqCompatilibility(Set<SearchRequest> eqRequests) {
+        if (null != eqRequests && eqRequests.size() > 1) {
+            Set<String> values = eqRequests.stream().map(SearchRequest::getValueToSearch).collect(toSet());
+            return 1 == values.size();
+        }
+        return true;
+    }
+
+    private static boolean checkStwithCompatibility(Set<SearchRequest> stwithRequests) {
+        if (null != stwithRequests && stwithRequests.size() > 1) {
+            List<String> startsWithValues = stwithRequests.stream()
+                    .map(SearchRequest::getValueToSearch).distinct()
+                    .sorted((i1, i2) -> Integer.compare(i2.length(), i1.length()))  //DESCENDING order
+                    .collect(toList());
+            Iterator<String> valueIterator = startsWithValues.iterator();
+            String mainValueToCompare = valueIterator.next();
+            while (valueIterator.hasNext()) {
+                if (!mainValueToCompare.startsWith(valueIterator.next())) {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
