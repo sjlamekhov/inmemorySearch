@@ -6,5 +6,7 @@ public enum  ConditionType {
     LT, //lower than
     NE, //not equals
     STWITH, //startsWith
+    CONTAINS,
+    LENGTH,
     ALL
 }

@@ -7,6 +7,7 @@ import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static search.SearchServiceUtils.combineAnd;
@@ -94,12 +95,20 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         String attributeToSearch = searchRequest.getAttributeToSearch();
         String valueToSearch = searchRequest.getValueToSearch();
 
-        if (conditionType == ConditionType.ALL) {
+        if (ConditionType.ALL == conditionType) {
             return new HashSet<>(reverseAttributeIndex.keySet());
         }
 
-        if (conditionType == ConditionType.STWITH) {
+        if (ConditionType.STWITH == conditionType) {
             return searchByStartsWith(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
+        }
+
+        if (ConditionType.LENGTH == conditionType) {
+            return searchByLength(searchRequest.getAttributeToSearch(), Integer.parseInt(searchRequest.getValueToSearch()));
+        }
+
+        if (ConditionType.CONTAINS == conditionType) {
+            return searchByContains(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
         }
 
         Set<U> result = new HashSet<>();
@@ -107,25 +116,47 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         if (attributeIndex == null) {
             return Collections.emptySet();
         }
-        if (conditionType == ConditionType.EQ) {
+        if (ConditionType.EQ == conditionType) {
             Set<U> innerResult = attributeIndex.get(valueToSearch);
             if (null != innerResult && !innerResult.isEmpty()) {
                 result.addAll(innerResult);
             }
-        } else if (conditionType == ConditionType.NE) {
+        } else if (ConditionType.NE == conditionType) {
             attributeIndex.forEach((key, value) -> {
                 if (!Objects.equals(valueToSearch, key)) {
                     result.addAll(value);
                 }
             });
-        } else if(conditionType == ConditionType.GT) {
+        } else if(ConditionType.GT == conditionType) {
             Map<String, Set<U>> map = attributeIndex.tailMap(valueToSearch, false);
             result.addAll(map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet()));
-        } else if(conditionType == ConditionType.LT) {
+        } else if(ConditionType.LT == conditionType) {
             Map<String, Set<U>> map = attributeIndex.headMap(valueToSearch, false);
             result.addAll(map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet()));
         } else {
             throw new UnsupportedOperationException();
+        }
+        return result;
+    }
+
+    private Set<U> searchByLength(String attributeToSearch, int lengthToSearch) {
+        return searchByPredicate(attributeToSearch, i -> lengthToSearch == i.length());
+    }
+
+    private Set<U> searchByContains(String attributeToSearch, String valueToSearch) {
+        return searchByPredicate(attributeToSearch, i -> i.contains(valueToSearch));
+    }
+
+    private Set<U> searchByPredicate(String attributeToSearch, Predicate<String> stringPredicate) {
+        TreeMap<String, Set<U>> attributeIndex = attributeIndexes.get(attributeToSearch);
+        if (null == attributeIndex) {
+            return Collections.emptySet();
+        }
+        Set<U> result = new HashSet<>();
+        for (Map.Entry<String, Set<U>> entry : attributeIndex.entrySet()) {
+            if (stringPredicate.test(entry.getKey())) {
+                result.addAll(entry.getValue());
+            }
         }
         return result;
     }
