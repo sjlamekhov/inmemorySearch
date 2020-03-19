@@ -80,6 +80,11 @@ public class PlainSearchRequestOptimizer implements SearchRequestOptimizer {
                 return false;
             }
 
+            //ConditionType.LENGTH
+            if (!checkLengthCompatibility(groupedByConditionType.get(ConditionType.LENGTH))) {
+                return false;
+            }
+
             //ConditionType.EQ
             if (!checkEqCompatilibility(groupedByConditionType.get(ConditionType.EQ))) {
                 return false;
@@ -91,6 +96,14 @@ public class PlainSearchRequestOptimizer implements SearchRequestOptimizer {
                     groupedByConditionType.get(ConditionType.GT))) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    private static boolean checkLengthCompatibility(Set<SearchRequest> lengthRequests) {
+        if (null != lengthRequests && lengthRequests.size() > 1) {
+            Set<Integer> lengths = lengthRequests.stream().map(i -> Integer.parseInt(i.getValueToSearch())).collect(toSet());
+            return 1 == lengths.size();
         }
         return true;
     }

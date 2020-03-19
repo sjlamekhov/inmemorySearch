@@ -21,6 +21,9 @@ public class ApplianceChecker implements BiPredicate<SearchRequest, AbstractObje
         predicates.put(ConditionType.NE, (valueFromRequest, valueFromObject) -> !Objects.equals(valueFromRequest, valueFromObject));
         predicates.put(ConditionType.GT, (valueFromRequest, valueFromObject) -> valueFromObject.compareTo(valueFromRequest) > 0);
         predicates.put(ConditionType.LT, (valueFromRequest, valueFromObject) -> valueFromObject.compareTo(valueFromRequest) < 0);
+        predicates.put(ConditionType.STWITH, (valueFromRequest, valueFromObject) -> valueFromObject.startsWith(valueFromRequest));
+        predicates.put(ConditionType.CONTAINS, (valueFromRequest, valueFromObject) -> valueFromObject.contains(valueFromRequest));
+        predicates.put(ConditionType.LENGTH, (valueFromRequest, valueFromObject) -> valueFromObject.length() == Integer.parseInt(valueFromRequest));
     }
 
     @Override

@@ -31,139 +31,26 @@ public abstract class AbstractSearchServiceTest {
     }
 
     @Test
-    public void eqIndexedAttribute() {
-        DocumentUri documentUri = new DocumentUri(tenantId);
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("attribute", "value");
-        Document document = new Document(documentUri, attributes);
+    public void allRequest() {
+        final int numberOfObjects = 16;
+        Set<DocumentUri> uris = new HashSet<>();
+        for (int i = 0; i < numberOfObjects; i++) {
+            DocumentUri documentUri = new DocumentUri(tenantId);
+            Map<String, String> attributes = new HashMap<>();
+            attributes.put("attribute", "value" + i);
+            Document document = new Document(documentUri, attributes);
+            searchService.addObjectToIndex(document);
+            uris.add(documentUri);
+        }
 
         final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value")
-                .setConditionType(ConditionType.EQ)
-                .build();
-
-        searchService.addObjectToIndex(document);
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(1, searchResult.size());
-        Assert.assertTrue(searchResult.contains(documentUri));
-        Assert.assertEquals(1, searchService.count(tenantId, searchRequest));
-
-        searchService.removeObjectFromIndex(document);
-        searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(0, searchResult.size());
-        Assert.assertEquals(0, searchService.count(tenantId, searchRequest));
-    }
-
-    @Test
-    public void neqIndexedAttribute() {
-        DocumentUri documentUri1 = new DocumentUri(tenantId);
-        Map<String, String> attributes1 = new HashMap<>();
-        attributes1.put("attribute", "value1");
-        Document document1 = new Document(documentUri1, attributes1);
-        searchService.addObjectToIndex(document1);
-
-        DocumentUri documentUri2 = new DocumentUri(tenantId);
-        Map<String, String> attributes2 = new HashMap<>();
-        attributes2.put("attribute", "value12");
-        Document document2 = new Document(documentUri2, attributes2);
-        searchService.addObjectToIndex(document2);
-
-        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value")
-                .setConditionType(ConditionType.NE)
+                .setConditionType(ConditionType.ALL)
                 .build();
 
         Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(2, searchResult.size());
-        Assert.assertTrue(searchResult.containsAll(Arrays.asList(documentUri1, documentUri2)));
-        Assert.assertEquals(2, searchService.count(tenantId, searchRequest));
-
-        final SearchRequest searchRequest1 = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value1")
-                .setConditionType(ConditionType.NE)
-                .build();
-
-        Collection<DocumentUri> searchResult1 = searchService.search(tenantId, searchRequest1);
-        Assert.assertEquals(1, searchResult1.size());
-        Assert.assertTrue(searchResult1.contains(documentUri2));
-        Assert.assertEquals(1, searchService.count(tenantId, searchRequest1));
-    }
-
-    @Test
-    public void gtIndexedAttribute() {
-        DocumentUri documentUri1 = new DocumentUri(tenantId);
-        Map<String, String> attributes1 = new HashMap<>();
-        attributes1.put("attribute", "value1");
-        Document document1 = new Document(documentUri1, attributes1);
-        searchService.addObjectToIndex(document1);
-
-        DocumentUri documentUri2 = new DocumentUri(tenantId);
-        Map<String, String> attributes2 = new HashMap<>();
-        attributes2.put("attribute", "value2");
-        Document document2 = new Document(documentUri2, attributes2);
-        searchService.addObjectToIndex(document2);
-
-        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value")
-                .setConditionType(ConditionType.GT)
-                .build();
-
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(2, searchResult.size());
-        Assert.assertTrue(searchResult.containsAll(Arrays.asList(documentUri1, documentUri2)));
-        Assert.assertEquals(2, searchService.count(tenantId, searchRequest));
-
-        final SearchRequest searchRequest1 = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value1")
-                .setConditionType(ConditionType.GT)
-                .build();
-
-        Collection<DocumentUri> searchResult1 = searchService.search(tenantId, searchRequest1);
-        Assert.assertEquals(1, searchResult1.size());
-        Assert.assertTrue(searchResult1.contains(documentUri2));
-        Assert.assertEquals(1, searchService.count(tenantId, searchRequest1));
-    }
-
-    @Test
-    public void ltIndexedAttribute() {
-        DocumentUri documentUri1 = new DocumentUri(tenantId);
-        Map<String, String> attributes1 = new HashMap<>();
-        attributes1.put("attribute", "value1");
-        Document document1 = new Document(documentUri1, attributes1);
-        searchService.addObjectToIndex(document1);
-
-        DocumentUri documentUri2 = new DocumentUri(tenantId);
-        Map<String, String> attributes2 = new HashMap<>();
-        attributes2.put("attribute", "value2");
-        Document document2 = new Document(documentUri2, attributes2);
-        searchService.addObjectToIndex(document2);
-
-        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("valuevalue")
-                .setConditionType(ConditionType.LT)
-                .build();
-
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(2, searchResult.size());
-        Assert.assertTrue(searchResult.containsAll(Arrays.asList(documentUri1, documentUri2)));
-        Assert.assertEquals(2, searchService.count(tenantId, searchRequest));
-
-        final SearchRequest searchRequest1 = SearchRequest.Builder.newInstance()
-                .setAttributeToSearch("attribute")
-                .setValueToSearch("value2")
-                .setConditionType(ConditionType.LT)
-                .build();
-
-        Collection<DocumentUri> searchResult1 = searchService.search(tenantId, searchRequest1);
-        Assert.assertEquals(1, searchResult1.size());
-        Assert.assertTrue(searchResult1.contains(documentUri1));
-        Assert.assertEquals(1, searchService.count(tenantId, searchRequest1));
+        Assert.assertEquals(numberOfObjects, searchResult.size());
+        Assert.assertEquals(uris, searchResult);
+        Assert.assertEquals(numberOfObjects, searchService.count(tenantId, searchRequest));
     }
 
     @Test
@@ -242,30 +129,7 @@ public abstract class AbstractSearchServiceTest {
     }
 
     @Test
-    public void allRequest() {
-        final int numberOfObjects = 16;
-        Set<DocumentUri> uris = new HashSet<>();
-        for (int i = 0; i < numberOfObjects; i++) {
-            DocumentUri documentUri = new DocumentUri(tenantId);
-            Map<String, String> attributes = new HashMap<>();
-            attributes.put("attribute", "value" + i);
-            Document document = new Document(documentUri, attributes);
-            searchService.addObjectToIndex(document);
-            uris.add(documentUri);
-        }
-
-        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
-                .setConditionType(ConditionType.ALL)
-                .build();
-
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(numberOfObjects, searchResult.size());
-        Assert.assertEquals(uris, searchResult);
-        Assert.assertEquals(numberOfObjects, searchService.count(tenantId, searchRequest));
-    }
-
-    @Test
-    public void typeAheadSearch() {
+    public void stwithSearch() {
         DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute", "value");
@@ -289,37 +153,185 @@ public abstract class AbstractSearchServiceTest {
     }
 
     @Test
-    public void typeAheadSearchAndRemoveFromIndex() {
+    public void eqAndRemoveFromIndex() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueToCompare");
+        attributes.put("attributeOther", "otherValue");
+        Document document = new Document(documentUri, attributes);
 
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "valueToCompare");
+        attributesForDeletion.put("attributeOther", "veryOtherValue");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.EQ)
+                .setValueToSearch("valueToCompare")
+                .build();
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    @Test
+    public void neqAndRemoveFromIndex() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueToCompare1");
+        Document document = new Document(documentUri, attributes);
+
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "valueToCompare2");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.NE)
+                .setValueToSearch("valueToCompare")
+                .build();
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    @Test
+    public void gtAndRemoveFromIndex() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueToCompare1");
+        Document document = new Document(documentUri, attributes);
+
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "valueToCompare2");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.GT)
+                .setValueToSearch("valueToCompare")
+                .build();
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    @Test
+    public void ltAndRemoveFromIndex() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueToCompare1");
+        Document document = new Document(documentUri, attributes);
+
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "valueToCompare2");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.LT)
+                .setValueToSearch("valueToCompare3")
+                .build();
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    @Test
+    public void lengthIncompatibleRequest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueWithSomeLengthButWhoCares");
+        Document document = new Document(documentUri, attributes);
+        searchService.addObjectToIndex(document);
+
+        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.LENGTH)
+                .setValueToSearch("17")
+                .and(SearchRequest.Builder.newInstance()
+                                .setAttributeToSearch("attribute")
+                                .setConditionType(ConditionType.LENGTH)
+                                .setValueToSearch("18")
+                                .build())
+                .build();
+
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
+        Assert.assertTrue(searchResult.isEmpty());
+    }
+
+    @Test
+    public void stwithAndRemoveFromIndex() {
         DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute", "valueLong");
         Document document = new Document(documentUri, attributes);
-        searchService.addObjectToIndex(document);
 
         DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
         Map<String, String> attributesForDeletion = new HashMap<>();
         attributesForDeletion.put("attribute", "value");
         Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
-        searchService.addObjectToIndex(documentForDeletion);
 
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+        SearchRequest searchRequest = SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
                 .setConditionType(ConditionType.STWITH)
                 .setValueToSearch("value")
-                .build());
-        Assert.assertEquals(2, searchResult.size());
-        Assert.assertTrue(searchResult.containsAll(Arrays.asList(documentUriForDeletion, documentUri)));
+                .build();
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
 
-        searchService.removeObjectFromIndex(documentForDeletion);
+    @Test
+    public void lengthAndRemoveRequest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "valueWithLength17");
+        Document document = new Document(documentUri, attributes);
 
-        searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "vvlueWithLength17");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
-                .setConditionType(ConditionType.STWITH)
-                .setValueToSearch("valuel")
-                .build());
+                .setConditionType(ConditionType.LENGTH)
+                .setValueToSearch("17")
+                .build();
+
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    @Test
+    public void containsAndRemoveRequest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "someAttributeValue1");
+        Document document = new Document(documentUri, attributes);
+
+        DocumentUri documentUriForDeletion = new DocumentUri(tenantId);
+        Map<String, String> attributesForDeletion = new HashMap<>();
+        attributesForDeletion.put("attribute", "someAttributeValue2");
+        Document documentForDeletion = new Document(documentUriForDeletion, attributesForDeletion);
+
+        final SearchRequest searchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.CONTAINS)
+                .setValueToSearch("Value")
+                .build();
+
+        testWithRemove(document, documentForDeletion, searchRequest);
+    }
+
+    private void testWithRemove(Document toAdd, Document toAddAndRemoveFromIndex, SearchRequest searchRequest) {
+        searchService.addObjectToIndex(toAdd);
+        searchService.addObjectToIndex(toAddAndRemoveFromIndex);
+
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
+        Assert.assertEquals(2, searchResult.size());
+        Assert.assertTrue(searchResult.containsAll(Arrays.asList(toAdd.getUri(), toAddAndRemoveFromIndex.getUri())));
+
+        searchService.removeObjectFromIndex(toAddAndRemoveFromIndex);
+
+        searchResult = searchService.search(tenantId, searchRequest);
         Assert.assertEquals(1, searchResult.size());
-        Assert.assertTrue(searchResult.contains(documentUri));
+        Assert.assertTrue(searchResult.contains(toAdd.getUri()));
     }
 
 }

@@ -99,4 +99,34 @@ public class PlainSearchRequestOptimizerTest {
         Assert.assertNull(searchRequestOptimizer.optimize(notAppliableSearchRequest));
     }
 
+    @Test
+    public void testAppliableLENGTH() {
+        SearchRequest appliableSearchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute1")
+                .setConditionType(ConditionType.LENGTH)
+                .setValueToSearch("1")
+                .and(SearchRequest.Builder.newInstance()
+                        .setAttributeToSearch("attribute2")
+                        .setConditionType(ConditionType.STWITH)
+                        .setValueToSearch("2")
+                        .build())
+                .build();
+        Assert.assertNotNull(searchRequestOptimizer.optimize(appliableSearchRequest));
+    }
+
+    @Test
+    public void testNotAppliableLENGTH() {
+        SearchRequest notAppliableSearchRequest = SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute1")
+                .setConditionType(ConditionType.LENGTH)
+                .setValueToSearch("1")
+                .and(SearchRequest.Builder.newInstance()
+                        .setAttributeToSearch("attribute1")
+                        .setConditionType(ConditionType.LENGTH)
+                        .setValueToSearch("2")
+                        .build())
+                .build();
+        Assert.assertNull(searchRequestOptimizer.optimize(notAppliableSearchRequest));
+    }
+
 }
