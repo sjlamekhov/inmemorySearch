@@ -4,17 +4,22 @@ import objects.AbstractObjectUri;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class TrieNode <U extends AbstractObjectUri> {
 
     private final String value;
     private Map<String, TrieNode<U>> childs;
     private Set<U> uris;
+    private TrieNode<U> parent;
+    private int maxDepthOfChilds;
 
-    TrieNode(String value) {
+    TrieNode(String value, TrieNode<U> parent) {
+        this.parent = parent;
         this.value = value;
         this.childs = new HashMap<>();
         this.uris = new HashSet<>();
+        this.maxDepthOfChilds = 0;
     }
 
     public String getValue() {
@@ -33,6 +38,37 @@ class TrieNode <U extends AbstractObjectUri> {
         return uris;
     }
 
+    public int getMaxDepthOfChilds() {
+        return maxDepthOfChilds;
+    }
+
+    private TrieNode<U> setMaxDepthOfChilds(int maxDepthOfChilds) {
+        this.maxDepthOfChilds = maxDepthOfChilds;
+        return this;
+    }
+
+    void updateMaxDepthOnAdd(int newDepth) {
+        maxDepthOfChilds = Math.max(maxDepthOfChilds, newDepth);
+        if (null == parent) {
+            return;
+        }
+        if (parent.getMaxDepthOfChilds() < newDepth + 1) {
+            parent.setMaxDepthOfChilds(newDepth + 1);
+            parent.updateMaxDepthOnAdd(parent.getMaxDepthOfChilds());
+        }
+    }
+
+    void udpdateMaxDepthOnDelete() {
+        Collection<TrieNode<U>> childs = getChilds().values();
+        if (childs.isEmpty()) {
+            setMaxDepthOfChilds(0);
+        } else {
+            setMaxDepthOfChilds(Collections.max(childs.stream().map(i -> i.maxDepthOfChilds).collect(Collectors.toSet())) + 1);
+        }
+        if (null != parent) {
+            parent.udpdateMaxDepthOnDelete();
+        }
+    }
 }
 
 public class Trie <U extends AbstractObjectUri> {
@@ -51,8 +87,8 @@ public class Trie <U extends AbstractObjectUri> {
         if (splitted.length == 0) {
             return Collections.emptySet();
         }
-        for (String valueToAdd : splitted) {
-            TrieNode<U> currentNode = localRoot.get(valueToAdd);
+        for (String valueToSearch : splitted) {
+            TrieNode<U> currentNode = localRoot.get(valueToSearch);
             if (currentNode == null) {
                 return Collections.emptySet();
             }
@@ -68,14 +104,17 @@ public class Trie <U extends AbstractObjectUri> {
         if (splitted.length == 0) {
             return;
         }
+        TrieNode<U> previousNode = null;
         for (String valueToAdd : splitted) {
             TrieNode<U> currentNode = localRoot.get(valueToAdd);
             if (currentNode == null) {
-                currentNode = new TrieNode<>(valueToAdd);
+                currentNode = new TrieNode<>(valueToAdd, previousNode);
+                currentNode.updateMaxDepthOnAdd(0);
                 localRoot.put(valueToAdd, currentNode);
             }
             localRoot = currentNode.getChilds();
             currentNode.addUri(uri);
+            previousNode = currentNode;
         }
     }
 
@@ -106,6 +145,7 @@ public class Trie <U extends AbstractObjectUri> {
         for (int i = foundNodes.size() - 1; i >= 0; i--) {
             if (needToWipeFollowing && followingValueToWipe != null) {
                 foundNodes.get(i).getChilds().remove(followingValueToWipe);
+                foundNodes.get(i).udpdateMaxDepthOnDelete();
             }
             if (foundNodes.get(i).getUris().isEmpty()) {
                 followingValueToWipe = foundNodes.get(i).getValue();
