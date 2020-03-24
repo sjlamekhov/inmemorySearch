@@ -154,5 +154,10 @@ public class Trie <U extends AbstractObjectUri> {
         }
     }
 
+    public int getMaxLength() {
+        return roots.values().stream()
+                .map(TrieNode::getMaxDepthOfChilds)
+                .max(Integer::compare).get();
+    }
 
 }

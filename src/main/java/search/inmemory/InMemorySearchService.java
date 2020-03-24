@@ -163,7 +163,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
 
     private Set<U> searchByStartsWith(String field, String prefix) {
         Trie<U> prefixSearchIndex = attributePrefixIndexes.get(field);
-        if (prefixSearchIndex == null) {
+        if (null == prefixSearchIndex || prefixSearchIndex.getMaxLength() + 1 < prefix.length()) {
             return Collections.emptySet();
         }
         prefix = prefix.toLowerCase();
