@@ -28,4 +28,8 @@ public class ShardingService<U extends AbstractObjectUri, T extends AbstractObje
         return result;
     }
 
+    public T getObjectSharded(U uri) {
+        return (T) searchClient.getObjectByUriRequest(uri);
+    }
+
 }

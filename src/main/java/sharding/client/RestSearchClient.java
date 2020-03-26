@@ -60,6 +60,30 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
         consumer.accept(executeSearchRequest(tenantId, searchRequest));
     }
 
+    @Override
+    public T getObjectByUriRequest(U uri) {
+        Objects.requireNonNull(uri);
+        for (String clusterNode : clusterNodes) {
+            T localResult = getObjectByUriRequestInternal(uri.getId(), uri.getTenantId(), clusterNode);
+            if (null != localResult) {
+                return localResult;
+            }
+        }
+        return null;
+    }
+
+    private T getObjectByUriRequestInternal(String id, String tenantId, String nodeToRequest) {
+        String uri = String.format("http://%s/%s/search/getById/%s", nodeToRequest, tenantId, id);
+
+        String response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), String.class).getBody();
+        try {
+            return mapper.readValue(response, new TypeReference<Collection<DocumentUri>>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private HttpHeaders buildDefaultHeader() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));

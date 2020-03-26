@@ -35,6 +35,11 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     }
 
     @Override
+    public T getObjectByUri(U uri) {
+        return searchService.getObjectByUri(uri);
+    }
+
+    @Override
     public void addObjectToIndex(T object) {
         searchService.addObjectToIndex(object);
         localChanges.add(new Message(

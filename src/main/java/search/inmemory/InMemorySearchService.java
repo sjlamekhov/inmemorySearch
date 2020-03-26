@@ -2,6 +2,8 @@ package search.inmemory;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
+import objects.Document;
+import objects.DocumentUri;
 import search.ConditionType;
 import search.request.SearchRequest;
 import search.SearchService;
@@ -23,6 +25,21 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         this.attributeIndexes = new HashMap<>();
         this.attributePrefixIndexes = new HashMap<>();
         this.reverseAttributeIndex = new HashMap<>();
+    }
+
+    @Override
+    public T getObjectByUri(U uri) {
+        Map<String, String> attributes = new HashMap<>();
+        for (Map.Entry<String, TreeMap<String, Set<U>>> entry : attributeIndexes.entrySet()) {
+            String attributeName = entry.getKey();
+            for (Map.Entry<String, Set<U>> valueAndUri : entry.getValue().entrySet()) {
+                if (valueAndUri.getValue().contains(uri)) {
+                    attributes.put(attributeName, valueAndUri.getKey());
+                    break;
+                }
+            }
+        }
+        return (T) new Document((DocumentUri) uri, attributes);
     }
 
     @Override

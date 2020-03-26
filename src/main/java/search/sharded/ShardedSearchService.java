@@ -26,6 +26,15 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
+    public T getObjectByUri(U uri) {
+        T localResult = searchService.getObjectByUri(uri);
+        if (null != localResult) {
+            return localResult;
+        }
+        return shardingService.getObjectSharded(uri);
+    }
+
+    @Override
     public void addObjectToIndex(T object) {
         searchService.addObjectToIndex(object);
     }

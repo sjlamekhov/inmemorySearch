@@ -25,6 +25,13 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
     }
 
     @Override
+    public T getObjectByUri(U uri) {
+        Objects.requireNonNull(uri);
+        String tenantId = uri.getTenantId();
+        return getSearchServiceInternal(tenantId).getObjectByUri(uri);
+    }
+
+    @Override
     public void addObjectToIndex(T object) {
         Objects.requireNonNull(object.getUri());
         String tenantId = object.getUri().getTenantId();

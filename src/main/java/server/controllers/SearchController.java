@@ -26,6 +26,15 @@ public class SearchController {
 
     private SearchRequestConverter searchRequestConverter = new SearchRequestStringConverter();
 
+    @RequestMapping(value = "/{tenantId}/search/getById/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public Document getByUri(
+            @PathVariable("tenantId") String tenantId,
+            @PathVariable("id") String id) {
+        return searchService.getObjectByUri(new DocumentUri(id, tenantId));
+    }
+
     @RequestMapping(value = "/{tenantId}/search/index",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)

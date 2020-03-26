@@ -9,6 +9,7 @@ import java.util.Collection;
 
 public interface SearchService<U extends AbstractObjectUri, T extends AbstractObject> {
 
+    T getObjectByUri(U uri);
     void addObjectToIndex(T object);
     void removeObjectFromIndex(T object);
     Collection<U> search(String tenantId, SearchRequest searchRequest);
