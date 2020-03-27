@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import search.request.SearchRequest;
 
-
 import java.util.*;
 
 public abstract class AbstractSearchServiceTest {
@@ -28,6 +27,25 @@ public abstract class AbstractSearchServiceTest {
     @After
     public void after() {
         searchService.dropIndexes(tenantId);
+    }
+
+    @Test
+    public void getByUriTest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute1", "attributeValue1");
+        attributes.put("attribute2", "attributeValue2");
+        Document document = new Document(documentUri, attributes);
+
+        searchService.addObjectToIndex(document);
+        Document fetched = searchService.getObjectByUri(documentUri);
+        Assert.assertNotNull(fetched);
+        Assert.assertEquals(documentUri, fetched.getUri());
+        Assert.assertEquals(attributes, fetched.getAttributes());
+
+        searchService.removeObjectFromIndex(document);
+        fetched = searchService.getObjectByUri(documentUri);
+        Assert.assertNull(fetched);
     }
 
     @Test

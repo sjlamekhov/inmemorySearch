@@ -39,6 +39,9 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                 }
             }
         }
+        if (attributes.isEmpty()) {
+            return null;
+        }
         return (T) new Document((DocumentUri) uri, attributes);
     }
 
@@ -70,8 +73,13 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             if (attributeIndex == null) {
                 continue;
             }
-            for (Map.Entry<String, Set<U>> entry : attributeIndex.entrySet()) {
+            Iterator<Map.Entry<String, Set<U>>> entryIterator = attributeIndex.entrySet().iterator();
+            while (entryIterator.hasNext()) {
+                Map.Entry<String, Set<U>> entry = entryIterator.next();
                 entry.getValue().removeIf(i -> Objects.equals(uri, i));
+                if (entry.getValue().isEmpty()) {
+                    entryIterator.remove();
+                }
             }
             Trie<U> trie = attributePrefixIndexes.get(attributeName);
             if (trie == null) {

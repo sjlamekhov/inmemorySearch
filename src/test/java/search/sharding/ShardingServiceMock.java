@@ -39,6 +39,11 @@ public class ShardingServiceMock<U extends AbstractObjectUri, T extends Abstract
         return result;
     }
 
+    @Override
+    public T getObjectSharded(U uri) {
+        return null;
+    }
+
     public void dropIndexes() {
         searchRequestAndDocuments.clear();
     }
