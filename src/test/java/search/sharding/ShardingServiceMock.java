@@ -44,6 +44,9 @@ public class ShardingServiceMock<U extends AbstractObjectUri, T extends Abstract
         return null;
     }
 
+    public void removeObjectFromIndex(T object) {
+    }
+
     public void dropIndexes() {
         searchRequestAndDocuments.clear();
     }

@@ -42,7 +42,7 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     @Override
     public void removeObjectFromIndex(T object) {
         searchService.removeObjectFromIndex(object);
-        //TODO: add call to other nodes as well
+        shardingService.removeObjectFromIndex(object);
     }
 
     @Override

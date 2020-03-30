@@ -36,4 +36,7 @@ public class ShardingService<U extends AbstractObjectUri, T extends AbstractObje
         return (T) result;
     }
 
+    public void removeObjectFromIndex(T object) {
+        searchClient.removeObjectFromIndex(object);
+    }
 }

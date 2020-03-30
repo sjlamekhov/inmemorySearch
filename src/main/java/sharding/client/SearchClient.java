@@ -14,4 +14,6 @@ public abstract class SearchClient<U extends AbstractObjectUri, T extends Abstra
     public abstract void executeSearchRequestAsync(String tenantId, SearchRequest searchRequest, Consumer<Collection<U>> consumer);
 
     public abstract T getObjectByUriRequest(U uri);
+
+    public abstract void removeObjectFromIndex(T object);
 }

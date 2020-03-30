@@ -72,6 +72,18 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
         return null;
     }
 
+    @Override
+    public void removeObjectFromIndex(T object) {
+        Objects.requireNonNull(object);
+        Objects.requireNonNull(object.getUri());
+        String tenantId = object.getUri().getTenantId();
+        String id = object.getUri().getId();
+        for (String clusterNode : clusterNodes) {
+            String uri = String.format("http://%s/%s/search/remove/%s", clusterNode, tenantId, id);
+            restTemplate.exchange(uri, HttpMethod.DELETE, new HttpEntity<>(headers), String.class).getBody();
+        }
+    }
+
     private T getObjectByUriRequestInternal(String id, String tenantId, String nodeToRequest) {
         String uri = String.format("http://%s/%s/search/getById/%s", nodeToRequest, tenantId, id);
 
