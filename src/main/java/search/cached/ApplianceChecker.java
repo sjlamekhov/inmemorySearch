@@ -10,6 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
+import static search.editDistance.LevenshteinDistance.getDistance;
+
 public class ApplianceChecker implements BiPredicate<SearchRequest, AbstractObject> {
 
     private final Map<ConditionType, BiPredicate<String, String>> predicates;
@@ -24,6 +26,7 @@ public class ApplianceChecker implements BiPredicate<SearchRequest, AbstractObje
         predicates.put(ConditionType.STWITH, (valueFromRequest, valueFromObject) -> valueFromObject.startsWith(valueFromRequest));
         predicates.put(ConditionType.CONTAINS, (valueFromRequest, valueFromObject) -> valueFromObject.contains(valueFromRequest));
         predicates.put(ConditionType.LENGTH, (valueFromRequest, valueFromObject) -> valueFromObject.length() == Integer.parseInt(valueFromRequest));
+        predicates.put(ConditionType.CLOSE_TO, (valueFromRequest, valueFromObject) -> getDistance(valueFromObject, valueFromRequest) < 3);
     }
 
     @Override

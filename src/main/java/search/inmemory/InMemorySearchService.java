@@ -5,6 +5,7 @@ import objects.AbstractObjectUri;
 import objects.Document;
 import objects.DocumentUri;
 import search.ConditionType;
+import search.editDistance.EditGenerator;
 import search.request.SearchRequest;
 import search.SearchService;
 
@@ -136,6 +137,10 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             return searchByContains(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
         }
 
+        if (ConditionType.CLOSE_TO == conditionType) {
+            return searchByDistance(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
+        }
+
         Set<U> result = new HashSet<>();
         TreeMap<String, Set<U>> attributeIndex = attributeIndexes.get(attributeToSearch);
         if (attributeIndex == null) {
@@ -170,6 +175,11 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
 
     private Set<U> searchByContains(String attributeToSearch, String valueToSearch) {
         return searchByPredicate(attributeToSearch, i -> i.contains(valueToSearch));
+    }
+
+    private Set<U> searchByDistance(String attributeToSearch, String valueToSearch) {
+        Set<String> allEditsOfInputString = EditGenerator.generateAllEdits(valueToSearch, 3);
+        return searchByPredicate(attributeToSearch, allEditsOfInputString::contains);
     }
 
     private Set<U> searchByPredicate(String attributeToSearch, Predicate<String> stringPredicate) {
