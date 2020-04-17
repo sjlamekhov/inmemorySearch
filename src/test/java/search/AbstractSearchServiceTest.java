@@ -337,6 +337,41 @@ public abstract class AbstractSearchServiceTest {
         testWithRemove(document, documentForDeletion, searchRequest);
     }
 
+    @Test
+    public void editDistanceTest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute", "value");
+        Document document = new Document(documentUri, attributes);
+        searchService.addObjectToIndex(document);
+
+        Collection<DocumentUri> result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.CLOSE_TO)
+                .setValueToSearch("value")
+                .build());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        Assert.assertTrue(result.contains(documentUri));
+
+        result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.CLOSE_TO)
+                .setValueToSearch("valua")
+                .build());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        Assert.assertTrue(result.contains(documentUri));
+
+        result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
+                .setAttributeToSearch("attribute")
+                .setConditionType(ConditionType.CLOSE_TO)
+                .setValueToSearch("valu")
+                .build());
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isEmpty());
+    }
+
     private void testWithRemove(Document toAdd, Document toAddAndRemoveFromIndex, SearchRequest searchRequest) {
         searchService.addObjectToIndex(toAdd);
         searchService.addObjectToIndex(toAddAndRemoveFromIndex);
