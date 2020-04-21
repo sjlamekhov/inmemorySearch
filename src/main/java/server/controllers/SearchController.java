@@ -28,7 +28,7 @@ public class SearchController {
 
     @RequestMapping(value = "/{tenantId}/search/getById/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public Document getByUri(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") String id) {
