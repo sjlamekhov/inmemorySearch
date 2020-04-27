@@ -6,7 +6,7 @@ public enum  ConditionType {
     LT, //lower than
     NE, //not equals
     STWITH, //startsWith
-    CLOSE_TO, //find all values that have edit distance <= 3
+    EDIIT_DIST3, //find all values that have edit distance <= 3
     CONTAINS,
     LENGTH,
     ALL

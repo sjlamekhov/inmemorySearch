@@ -347,7 +347,7 @@ public abstract class AbstractSearchServiceTest {
 
         Collection<DocumentUri> result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
-                .setConditionType(ConditionType.CLOSE_TO)
+                .setConditionType(ConditionType.EDIIT_DIST3)
                 .setValueToSearch("value")
                 .build());
         Assert.assertNotNull(result);
@@ -356,7 +356,7 @@ public abstract class AbstractSearchServiceTest {
 
         result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
-                .setConditionType(ConditionType.CLOSE_TO)
+                .setConditionType(ConditionType.EDIIT_DIST3)
                 .setValueToSearch("valua")
                 .build());
         Assert.assertNotNull(result);
@@ -365,7 +365,7 @@ public abstract class AbstractSearchServiceTest {
 
         result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
-                .setConditionType(ConditionType.CLOSE_TO)
+                .setConditionType(ConditionType.EDIIT_DIST3)
                 .setValueToSearch("valu")
                 .build());
         Assert.assertNotNull(result);

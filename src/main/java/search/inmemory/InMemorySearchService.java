@@ -137,7 +137,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             return searchByContains(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
         }
 
-        if (ConditionType.CLOSE_TO == conditionType) {
+        if (ConditionType.EDIIT_DIST3 == conditionType) {
             return searchByDistance(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
         }
 

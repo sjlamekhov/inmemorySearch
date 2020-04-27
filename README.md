@@ -1,7 +1,7 @@
 # inmemorySearch
 
 simple search engine with REST API that stores data in memory in column-oriented way
-(~~~with ability to make dumps to disk~~~ - to be implemented)
+(~~with ability to make dumps to disk~~ - to be implemented)
 
 ## key features
 * support of complex requests
@@ -16,7 +16,7 @@ simple search engine with REST API that stores data in memory in column-oriented
 * LT - lower than
 * NE - not equals
 * STWITH - startsWith
-* CLOSE_TO - find all attribute values that have edit distance <= 3
+* EDIIT_DIST3 - find all attribute values that have edit distance <= 3
 * CONTAINS - find all attribute values that contain specified string
 * LENGTH - find all attribute values by length
 
