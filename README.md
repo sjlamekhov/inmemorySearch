@@ -81,3 +81,12 @@ curl --location --request GET 'localhost:8080/testTenant/search/getById/1' \
 	}
 }'
 ```
+
+##configuration params
+* tenants - list of tenants on node
+* clusterNodes - list of nodes and ports
+* maxSearchRequestDepth - max number of nested leves in request
+* maxSearchRequestSize - max count of subqueries in request
+* operationalMode - "reliability" (all nodes has same data) or "sharding" (data is splitted between nodes)
+* gossipServerPort - port for server in "reliability" mode
+* useCache - query results are cached on nodes, caches are updated on update of objects

@@ -6,7 +6,7 @@ public class ConfigurationService {
 
     public enum OperationMode {
         reliability,
-        sharding;
+        sharding
     }
 
     private List<String> tenants;
