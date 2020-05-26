@@ -73,7 +73,7 @@ public class DocumentToCoordinatesCalculator {
         put('9', '9' - '0' + 53);
     }};
 
-    public static Map<String, Integer> documentToCoordinates(Document document, Set<String> allowedFields) {
+    private static Map<String, Integer> documentToCoordinates(Document document, Set<String> allowedFields) {
         Objects.requireNonNull(document);
         Objects.requireNonNull(document.getAttributes());
         Map<String, Integer> result = new HashMap<>();
@@ -81,13 +81,13 @@ public class DocumentToCoordinatesCalculator {
             if (!allowedFields.contains(attributeEntry.getKey())) {
                 continue;
             }
-            result.put(attributeEntry.getKey(), getCoordinateOfString(attributeEntry.getValue()));
+            result.put(attributeEntry.getKey(), stringToCoordinate(attributeEntry.getValue()));
         }
         return result;
     }
 
     //TODO: think about trailing spaces
-    public static int getCoordinateOfString(String value) {
+    public static int stringToCoordinate(String value) {
         int accumulator = 0;
         int multiplier = 1;
         int dictionarySize = DICTIONARY.size();
@@ -97,6 +97,27 @@ public class DocumentToCoordinatesCalculator {
             multiplier *= dictionarySize;
         }
         return accumulator;
+    }
+
+    public Map<List<String>, Long> combineAttributesAndCoordinates(Document document, Set<String> allowedFields) {
+        Map<String, Integer> convertedDocument = documentToCoordinates(document, allowedFields);
+        if (convertedDocument.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, Integer> squaresOfCoordinates = new HashMap<>(convertedDocument.size());
+        for (Map.Entry<String, Integer> entry : convertedDocument.entrySet()) {
+            squaresOfCoordinates.put(entry.getKey(), entry.getValue() * entry.getValue());
+        }
+        Set<List<String>> attributeCombinations = generateAllAttributeCombinations(new ArrayList<>(convertedDocument.keySet()));
+        Map<List<String>, Long> result = new HashMap<>(attributeCombinations.size());
+        for (List<String> combination : attributeCombinations) {
+            int tmpResult = 0;
+            for (String attributeName : combination) {
+                tmpResult += squaresOfCoordinates.get(attributeName);
+            }
+            result.put(combination, Math.round(Math.sqrt(tmpResult)));
+        }
+        return result;
     }
 
     private static Set<List<String>> generateAllAttributeCombinations(List<String> attributeNames) {
