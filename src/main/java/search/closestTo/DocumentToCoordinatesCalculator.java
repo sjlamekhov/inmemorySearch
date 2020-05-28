@@ -1,10 +1,11 @@
 package search.closestTo;
 
+import objects.AbstractObject;
 import objects.Document;
 
 import java.util.*;
 
-public class DocumentToCoordinatesCalculator {
+public class DocumentToCoordinatesCalculator<T extends AbstractObject> {
 
     private static final Map<Character, Integer> DICTIONARY = new HashMap() {{
         put('a', 'a' - 'a' + 1);
@@ -73,7 +74,7 @@ public class DocumentToCoordinatesCalculator {
         put('9', '9' - '0' + 53);
     }};
 
-    private static Map<String, Integer> documentToCoordinates(Document document, Set<String> allowedFields) {
+    private Map<String, Integer> documentToCoordinates(T document, Set<String> allowedFields) {
         Objects.requireNonNull(document);
         Objects.requireNonNull(document.getAttributes());
         Map<String, Integer> result = new HashMap<>();
@@ -99,7 +100,7 @@ public class DocumentToCoordinatesCalculator {
         return accumulator;
     }
 
-    public Map<List<String>, Long> combineAttributesAndCoordinates(Document document, Set<String> allowedFields) {
+    public Map<List<String>, Long> combineAttributesAndCoordinates(T document, Set<String> allowedFields) {
         Map<String, Integer> convertedDocument = documentToCoordinates(document, allowedFields);
         if (convertedDocument.isEmpty()) {
             return Collections.emptyMap();

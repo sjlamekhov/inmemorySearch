@@ -5,6 +5,7 @@ import objects.AbstractObjectUri;
 import objects.Document;
 import objects.DocumentUri;
 import search.ConditionType;
+import search.closestTo.DocumentToCoordinatesCalculator;
 import search.editDistance.EditGenerator;
 import search.request.SearchRequest;
 import search.SearchService;
@@ -21,11 +22,15 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     private final Map<String, TreeMap<String, Set<U>>> attributeIndexes;
     private final Map<String, Trie<U>> attributePrefixIndexes;
     private final Map<U, Set<String>> reverseAttributeIndex;
+    private final Map<List<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
+    private final DocumentToCoordinatesCalculator<T> documentToCoordinatesCalculator;
 
     public InMemorySearchService() {
         this.attributeIndexes = new HashMap<>();
         this.attributePrefixIndexes = new HashMap<>();
         this.reverseAttributeIndex = new HashMap<>();
+        this.objectDistanceIndexes = new HashMap<>();
+        this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
     }
 
     @Override
@@ -62,6 +67,15 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                     .addValueAndUri(value, uri);
             reverseAttributeIndex.computeIfAbsent(uri, i -> new HashSet<>()).add(attribute.getKey());
         }
+        Map<List<String>, Long> attributesAndDistances = documentToCoordinatesCalculator.combineAttributesAndCoordinates(
+                object, object.getAttributes().keySet()
+        );
+        for (Map.Entry<List<String>, Long> distanceEntry : attributesAndDistances.entrySet()) {
+            objectDistanceIndexes
+                    .computeIfAbsent(distanceEntry.getKey(), i -> new TreeMap<>())
+                    .computeIfAbsent(distanceEntry.getValue(), i -> new HashSet<>())
+                    .add((U) object.getUri());
+        }
     }
 
     @Override
@@ -89,6 +103,41 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             trie.removeUriFromTrie(uri);
         }
         reverseAttributeIndex.remove(uri);
+        //TODO: add deleting from objectDistanceIndexes
+    }
+
+    public Map<List<String>, Collection<U>> seearchNearestDocuments(Document input) {
+        Map<List<String>, Long> distancesFromInput = documentToCoordinatesCalculator
+                .combineAttributesAndCoordinates((T) input, input.getAttributes().keySet());
+        Map<List<String>, Collection<U>> result = new HashMap<>();
+        for (Map.Entry<List<String>, Long> distanceEntry : distancesFromInput.entrySet()) {
+            List<String> attributeCombination = distanceEntry.getKey();
+            Long distance = distanceEntry.getValue();
+            TreeMap<Long, Set<U>> map = objectDistanceIndexes.get(attributeCombination);
+            if (null == map) {
+                continue;
+            }
+            Map.Entry<Long, Set<U>> floorEntry = map.floorEntry(distance);
+            if (null != floorEntry && distance.equals(floorEntry.getKey())) {
+                result.put(attributeCombination, floorEntry.getValue());
+                continue;
+            }
+            Map.Entry<Long, Set<U>> ceilEntry = map.ceilingEntry(distance);
+            if (null != ceilEntry && distance.equals(ceilEntry.getKey())) {
+                result.put(attributeCombination, ceilEntry.getValue());
+                continue;
+            }
+            if (null != floorEntry && null != ceilEntry) {
+                long lowerAbs = Math.abs(floorEntry.getKey() - distance);
+                long upperAbs = Math.abs(floorEntry.getKey() - distance);
+                if (lowerAbs < upperAbs || lowerAbs == upperAbs) {
+                    result.put(attributeCombination, floorEntry.getValue());
+                } else {
+                    result.put(attributeCombination, ceilEntry.getValue());
+                }
+            }
+        }
+        return result;
     }
 
     @Override
