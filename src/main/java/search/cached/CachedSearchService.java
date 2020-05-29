@@ -7,6 +7,8 @@ import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class CachedSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
@@ -38,6 +40,11 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     public void removeObjectFromIndex(T object) {
         searchCache.removeObjectFromIndex(object);
         searchService.removeObjectFromIndex(object);
+    }
+
+    @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+        return searchService.searchNearestDocuments(object);
     }
 
     @Override

@@ -4,10 +4,7 @@ import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.request.SearchRequest;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
@@ -43,6 +40,13 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
         Objects.requireNonNull(object.getUri());
         String tenantId = object.getUri().getTenantId();
         getSearchServiceInternal(tenantId).removeObjectFromIndex(object);
+    }
+
+    @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+        Objects.requireNonNull(object.getUri());
+        String tenantId = object.getUri().getTenantId();
+        return getSearchServiceInternal(tenantId).searchNearestDocuments(object);
     }
 
     @Override

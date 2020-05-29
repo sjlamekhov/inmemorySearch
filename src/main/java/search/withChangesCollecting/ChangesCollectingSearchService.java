@@ -9,9 +9,7 @@ import search.request.SearchRequest;
 
 import javax.print.Doc;
 import java.net.InetAddress;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class ChangesCollectingSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
@@ -59,6 +57,11 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
                 "",
                 Message.MessageType.DELETE
         ));
+    }
+
+    @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+        return searchService.searchNearestDocuments(object);
     }
 
     @Override

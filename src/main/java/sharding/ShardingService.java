@@ -36,6 +36,10 @@ public class ShardingService<U extends AbstractObjectUri, T extends AbstractObje
         return (T) result;
     }
 
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+        return searchClient.searchNearestDocuments(object);
+    }
+
     public void removeObjectFromIndex(T object) {
         searchClient.removeObjectFromIndex(object);
     }

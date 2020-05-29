@@ -46,6 +46,12 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+
+        return searchService.searchNearestDocuments(object);
+    }
+
+    @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         if (null == searchRequestOptimizer.optimize(searchRequest)) {
             return Collections.emptySet();

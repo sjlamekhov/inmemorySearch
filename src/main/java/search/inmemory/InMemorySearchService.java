@@ -106,9 +106,10 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         //TODO: add deleting from objectDistanceIndexes
     }
 
-    public Map<List<String>, Collection<U>> seearchNearestDocuments(Document input) {
+    @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T input) {
         Map<List<String>, Long> distancesFromInput = documentToCoordinatesCalculator
-                .combineAttributesAndCoordinates((T) input, input.getAttributes().keySet());
+                .combineAttributesAndCoordinates(input, input.getAttributes().keySet());
         Map<List<String>, Collection<U>> result = new HashMap<>();
         for (Map.Entry<List<String>, Long> distanceEntry : distancesFromInput.entrySet()) {
             List<String> attributeCombination = distanceEntry.getKey();

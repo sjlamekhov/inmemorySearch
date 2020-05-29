@@ -73,6 +73,12 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
     }
 
     @Override
+    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+        //TODO: implement
+        return Collections.emptyMap();
+    }
+
+    @Override
     public void removeObjectFromIndex(T object) {
         Objects.requireNonNull(object);
         Objects.requireNonNull(object.getUri());
