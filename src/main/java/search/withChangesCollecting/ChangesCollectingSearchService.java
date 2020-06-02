@@ -60,7 +60,7 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     }
 
     @Override
-    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+    public Map<Set<String>, Collection<U>> searchNearestDocuments(T object) {
         return searchService.searchNearestDocuments(object);
     }
 

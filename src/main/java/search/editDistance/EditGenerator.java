@@ -27,12 +27,6 @@ public class EditGenerator {
         return result;
     }
 
-    public static void main(String[] args) {
-        Set<String> edits = generateAllEdits("input", 2);
-        System.out.println(edits);
-        System.out.println(edits.size());
-    }
-
     private static Set<Edit> generateAllEditsIternal(Set<Edit> input) {
         Set<Edit> result = new HashSet<>();
         for (Edit edit : input) {

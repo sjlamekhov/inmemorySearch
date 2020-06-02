@@ -337,6 +337,21 @@ public abstract class AbstractSearchServiceTest {
         testWithRemove(document, documentForDeletion, searchRequest);
     }
 
+    private void testWithRemove(Document toAdd, Document toAddAndRemoveFromIndex, SearchRequest searchRequest) {
+        searchService.addObjectToIndex(toAdd);
+        searchService.addObjectToIndex(toAddAndRemoveFromIndex);
+
+        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
+        Assert.assertEquals(2, searchResult.size());
+        Assert.assertTrue(searchResult.containsAll(Arrays.asList(toAdd.getUri(), toAddAndRemoveFromIndex.getUri())));
+
+        searchService.removeObjectFromIndex(toAddAndRemoveFromIndex);
+
+        searchResult = searchService.search(tenantId, searchRequest);
+        Assert.assertEquals(1, searchResult.size());
+        Assert.assertTrue(searchResult.contains(toAdd.getUri()));
+    }
+
     @Test
     public void editDistanceTest() {
         DocumentUri documentUri = new DocumentUri(tenantId);
@@ -372,19 +387,24 @@ public abstract class AbstractSearchServiceTest {
         Assert.assertTrue(result.isEmpty());
     }
 
-    private void testWithRemove(Document toAdd, Document toAddAndRemoveFromIndex, SearchRequest searchRequest) {
-        searchService.addObjectToIndex(toAdd);
-        searchService.addObjectToIndex(toAddAndRemoveFromIndex);
+    @Test
+    public void distanceTest() {
+        DocumentUri documentUri = new DocumentUri(tenantId);
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("attribute0", "value0");
+        attributes.put("attribute1", "value1");
+        attributes.put("attribute2", "value2");
+        Document document = new Document(documentUri, attributes);
+        searchService.addObjectToIndex(document);
 
-        Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(2, searchResult.size());
-        Assert.assertTrue(searchResult.containsAll(Arrays.asList(toAdd.getUri(), toAddAndRemoveFromIndex.getUri())));
-
-        searchService.removeObjectFromIndex(toAddAndRemoveFromIndex);
-
-        searchResult = searchService.search(tenantId, searchRequest);
-        Assert.assertEquals(1, searchResult.size());
-        Assert.assertTrue(searchResult.contains(toAdd.getUri()));
+        Map<String, String> attributesForQuerySingle = new HashMap<>();
+        attributesForQuerySingle.put("attribute0", "value0");
+        Document documentForQuerySingle = new Document(documentUri, attributesForQuerySingle);
+        Map<Set<String>, Collection<DocumentUri>> response = searchService
+                .searchNearestDocuments(documentForQuerySingle);
+        Assert.assertFalse(response.isEmpty());
+        Assert.assertEquals(1, response.values().iterator().next().size());
+        Assert.assertTrue(response.values().iterator().next().contains(documentUri));
     }
 
 }

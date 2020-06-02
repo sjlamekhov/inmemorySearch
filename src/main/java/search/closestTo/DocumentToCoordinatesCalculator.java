@@ -3,6 +3,7 @@ package search.closestTo;
 import objects.AbstractObject;
 import objects.Document;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class DocumentToCoordinatesCalculator<T extends AbstractObject> {
@@ -74,10 +75,10 @@ public class DocumentToCoordinatesCalculator<T extends AbstractObject> {
         put('9', '9' - '0' + 53);
     }};
 
-    private Map<String, Integer> documentToCoordinates(T document, Set<String> allowedFields) {
+    private Map<String, Long> documentToCoordinates(T document, Set<String> allowedFields) {
         Objects.requireNonNull(document);
         Objects.requireNonNull(document.getAttributes());
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Long> result = new HashMap<>();
         for (Map.Entry<String, String> attributeEntry : document.getAttributes().entrySet()) {
             if (!allowedFields.contains(attributeEntry.getKey())) {
                 continue;
@@ -88,30 +89,32 @@ public class DocumentToCoordinatesCalculator<T extends AbstractObject> {
     }
 
     //TODO: think about trailing spaces
-    public static int stringToCoordinate(String value) {
-        int accumulator = 0;
-        int multiplier = 1;
+    public static long stringToCoordinate(String value) {
+        BigInteger accumulator = BigInteger.valueOf(0L);
+        BigInteger multiplier = BigInteger.valueOf(1L);
+        BigInteger addition;
         int dictionarySize = DICTIONARY.size();
         int length = value.length();
         for (int i = 0; i < length; i++) {
-            accumulator += DICTIONARY.getOrDefault(value.charAt(length - i - 1), dictionarySize + 1) * multiplier;
-            multiplier *= dictionarySize;
+            addition = BigInteger.valueOf(DICTIONARY.getOrDefault(value.charAt(length - i - 1), dictionarySize + 1));
+            accumulator = accumulator.add(addition.multiply(multiplier));
+            multiplier = multiplier.multiply(BigInteger.valueOf(dictionarySize));
         }
-        return accumulator;
+        return accumulator.longValue();
     }
 
-    public Map<List<String>, Long> combineAttributesAndCoordinates(T document, Set<String> allowedFields) {
-        Map<String, Integer> convertedDocument = documentToCoordinates(document, allowedFields);
+    public Map<Set<String>, Long> combineAttributesAndCoordinates(T document, Set<String> allowedFields) {
+        Map<String, Long> convertedDocument = documentToCoordinates(document, allowedFields);
         if (convertedDocument.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, Integer> squaresOfCoordinates = new HashMap<>(convertedDocument.size());
-        for (Map.Entry<String, Integer> entry : convertedDocument.entrySet()) {
-            squaresOfCoordinates.put(entry.getKey(), entry.getValue() * entry.getValue());
+        Map<String, Long> squaresOfCoordinates = new HashMap<>(convertedDocument.size());
+        for (Map.Entry<String, Long> entry : convertedDocument.entrySet()) {
+            squaresOfCoordinates.put(entry.getKey(), (long) (entry.getValue() * entry.getValue()));
         }
-        Set<List<String>> attributeCombinations = generateAllAttributeCombinations(new ArrayList<>(convertedDocument.keySet()));
-        Map<List<String>, Long> result = new HashMap<>(attributeCombinations.size());
-        for (List<String> combination : attributeCombinations) {
+        Set<Set<String>> attributeCombinations = generateAllAttributeCombinations(new ArrayList<>(convertedDocument.keySet()));
+        Map<Set<String>, Long> result = new HashMap<>(attributeCombinations.size());
+        for (Set<String> combination : attributeCombinations) {
             int tmpResult = 0;
             for (String attributeName : combination) {
                 tmpResult += squaresOfCoordinates.get(attributeName);
@@ -121,18 +124,18 @@ public class DocumentToCoordinatesCalculator<T extends AbstractObject> {
         return result;
     }
 
-    private static Set<List<String>> generateAllAttributeCombinations(List<String> attributeNames) {
+    private static Set<Set<String>> generateAllAttributeCombinations(List<String> attributeNames) {
         if (attributeNames.isEmpty()) {
             return Collections.emptySet();
         }
-        Set<List<String>> result = new TreeSet<>(Comparator.comparingInt(List::size));
+        Set<Set<String>> result = new HashSet<>();
         int iterationsCount = 1 << attributeNames.size();   //2 ^ attributeNames.size()
-        List<String> internal;
+        Set<String> internal;
         for (int i = 1; i <= iterationsCount; i++) {
-            internal = new ArrayList<>(attributeNames.size());
-            for (int j = 0; j < attributeNames.size(); j++) {
-                if ((i & (1 << j)) != 0) {
-                    internal.add(attributeNames.get(j));
+            internal = new HashSet<>(attributeNames.size());
+            for (int j = 1; j <= attributeNames.size(); j++) {
+                if ((i & (1 << (j - 1))) != 0) {
+                    internal.add(attributeNames.get(j - 1));
                 }
             }
             if (!internal.isEmpty()) {

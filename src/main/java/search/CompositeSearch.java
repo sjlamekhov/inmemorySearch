@@ -43,7 +43,7 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
     }
 
     @Override
-    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+    public Map<Set<String>, Collection<U>> searchNearestDocuments(T object) {
         Objects.requireNonNull(object.getUri());
         String tenantId = object.getUri().getTenantId();
         return getSearchServiceInternal(tenantId).searchNearestDocuments(object);

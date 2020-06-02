@@ -123,9 +123,4 @@ public class SearchRequestStringConverter implements SearchRequestConverter {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(convertFromStringInternal("(attribute1,EQ,value1)and((attribute2,LT,value2)and(attribute3,LT,value3))").getLeft());
-        System.out.println(convertFromStringInternal("(attribute1,EQ,value1)or((attribute2,LT,value2)or(attribute3,LT,value3))").getLeft());
-    }
-
 }

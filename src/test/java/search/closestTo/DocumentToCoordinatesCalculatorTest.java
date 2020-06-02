@@ -23,11 +23,11 @@ public class DocumentToCoordinatesCalculatorTest {
     @Test
     public void getCoordinateOfStringDistanceTest() {
         String testData0 = "qwerty34";
-        int testDataCoordinate0 = stringToCoordinate(testData0);
+        long testDataCoordinate0 = stringToCoordinate(testData0);
         String testData1 = "qwerty12";
-        int testDataCoordinate1 = stringToCoordinate(testData1);
+        long testDataCoordinate1 = stringToCoordinate(testData1);
         String testData2 = "0werty12";
-        int testDataCoordinate2 = stringToCoordinate(testData2);
+        long testDataCoordinate2 = stringToCoordinate(testData2);
 
         assertNotEquals(testDataCoordinate0, testDataCoordinate1);
         assertNotEquals(testDataCoordinate0, testDataCoordinate2);

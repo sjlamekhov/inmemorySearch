@@ -22,7 +22,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     private final Map<String, TreeMap<String, Set<U>>> attributeIndexes;
     private final Map<String, Trie<U>> attributePrefixIndexes;
     private final Map<U, Set<String>> reverseAttributeIndex;
-    private final Map<List<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
+    private final Map<Set<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
     private final DocumentToCoordinatesCalculator<T> documentToCoordinatesCalculator;
 
     public InMemorySearchService() {
@@ -67,10 +67,10 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                     .addValueAndUri(value, uri);
             reverseAttributeIndex.computeIfAbsent(uri, i -> new HashSet<>()).add(attribute.getKey());
         }
-        Map<List<String>, Long> attributesAndDistances = documentToCoordinatesCalculator.combineAttributesAndCoordinates(
+        Map<Set<String>, Long> attributesAndDistances = documentToCoordinatesCalculator.combineAttributesAndCoordinates(
                 object, object.getAttributes().keySet()
         );
-        for (Map.Entry<List<String>, Long> distanceEntry : attributesAndDistances.entrySet()) {
+        for (Map.Entry<Set<String>, Long> distanceEntry : attributesAndDistances.entrySet()) {
             objectDistanceIndexes
                     .computeIfAbsent(distanceEntry.getKey(), i -> new TreeMap<>())
                     .computeIfAbsent(distanceEntry.getValue(), i -> new HashSet<>())
@@ -107,12 +107,12 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public Map<List<String>, Collection<U>> searchNearestDocuments(T input) {
-        Map<List<String>, Long> distancesFromInput = documentToCoordinatesCalculator
+    public Map<Set<String>, Collection<U>> searchNearestDocuments(T input) {
+        Map<Set<String>, Long> distancesFromInput = documentToCoordinatesCalculator
                 .combineAttributesAndCoordinates(input, input.getAttributes().keySet());
-        Map<List<String>, Collection<U>> result = new HashMap<>();
-        for (Map.Entry<List<String>, Long> distanceEntry : distancesFromInput.entrySet()) {
-            List<String> attributeCombination = distanceEntry.getKey();
+        Map<Set<String>, Collection<U>> result = new HashMap<>();
+        for (Map.Entry<Set<String>, Long> distanceEntry : distancesFromInput.entrySet()) {
+            Set<String> attributeCombination = distanceEntry.getKey();
             Long distance = distanceEntry.getValue();
             TreeMap<Long, Set<U>> map = objectDistanceIndexes.get(attributeCombination);
             if (null == map) {

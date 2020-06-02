@@ -9,6 +9,7 @@ import search.SearchService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CachedSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
@@ -43,7 +44,7 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     }
 
     @Override
-    public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
+    public Map<Set<String>, Collection<U>> searchNearestDocuments(T object) {
         return searchService.searchNearestDocuments(object);
     }
 
