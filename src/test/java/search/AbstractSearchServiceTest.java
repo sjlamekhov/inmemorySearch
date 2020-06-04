@@ -397,14 +397,32 @@ public abstract class AbstractSearchServiceTest {
         Document document = new Document(documentUri, attributes);
         searchService.addObjectToIndex(document);
 
-        Map<String, String> attributesForQuerySingle = new HashMap<>();
-        attributesForQuerySingle.put("attribute0", "value0");
-        Document documentForQuerySingle = new Document(documentUri, attributesForQuerySingle);
+        Map<String, String> attributesForQuery = new HashMap<>();
+        attributesForQuery.put("attribute0", "value0");
+        Document documentForQuery = new Document(null, attributesForQuery);
         Map<Set<String>, Collection<DocumentUri>> response = searchService
-                .searchNearestDocuments(documentForQuerySingle);
-        Assert.assertFalse(response.isEmpty());
+                .searchNearestDocuments(documentForQuery);
+        Assert.assertEquals(1, response.size());
+        Assert.assertEquals(1, response.keySet().iterator().next().size());
+        Assert.assertTrue(response.keySet().iterator().next().contains("attribute0"));
         Assert.assertEquals(1, response.values().iterator().next().size());
         Assert.assertTrue(response.values().iterator().next().contains(documentUri));
+
+        attributesForQuery.clear();
+        attributesForQuery.put("attribute0", "value0");
+        attributesForQuery.put("attribute1", "value1");
+        documentForQuery = new Document(documentUri, attributesForQuery);
+        response = searchService
+                .searchNearestDocuments(documentForQuery);
+        Assert.assertEquals(3, response.size());
+        Assert.assertTrue(response.keySet().stream()
+                .anyMatch(i -> i.size() == 1 && i.contains("attribute0")));
+        Assert.assertTrue(response.keySet().stream()
+                .anyMatch(i -> i.size() == 1 && i.contains("attribute1")));
+        Assert.assertTrue(response.keySet().stream()
+                .anyMatch(i -> i.size() == 2 && i.containsAll(Arrays.asList("attribute0", "attribute1"))));
+        Assert.assertTrue(response.values().stream()
+                .allMatch(i -> i.size() == 1 && i.contains(documentUri)));
     }
 
 }
