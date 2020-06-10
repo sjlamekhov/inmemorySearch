@@ -14,6 +14,8 @@ import search.request.SearchRequestStringConverter;
 import search.request.SearchRequestLimitations;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class SearchController {
@@ -83,6 +85,17 @@ public class SearchController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Search request does not pass depth or size check");
         }
         return new CountResponse(searchService.count(tenantId, searchRequest));
+    }
+
+    @RequestMapping(value = "/{tenantId}/search/nearest",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public Map<Set<String>, Collection<DocumentUri>> searchNearestDocuments(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody Document document) {
+        return searchService.searchNearestDocuments(
+                new Document(new DocumentUri(tenantId), document.getAttributes())
+        );
     }
 
     public class CountResponse {

@@ -19,7 +19,8 @@ simple search engine with REST API that stores data in memory in column-oriented
 * EDIIT_DIST3 - find all attribute values that have edit distance <= 3
 * CONTAINS - find all attribute values that contain specified string
 * LENGTH - find all attribute values by length
-* CLOSEST_TO - find documents which is closest to document constructed by fields and values passed in query
+* CLOSEST_TO - find documents which are closest to document constructed by fields and values passed in query
+* search for nearest document - search for indexed document that has mostly same attributes
 
 ## request examples
 ### add document to index:
@@ -50,6 +51,21 @@ curl --location --request GET 'localhost:8080/testTenant/search?request=((attrib
 ### get document by id = 1:
 ```
 curl --location --request GET 'localhost:8080/testTenant/search/getById/1'
+```
+
+### find closest document:
+```
+curl --location --request POST 'localhost:8080/testTenant/search/nearest' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"uri": {
+		"id": "1",
+		"tenantId": "testTenant"
+	},
+	"attributes": {
+		"attribute1": "value1"
+	}
+}'
 ```
 
 ##configuration params
