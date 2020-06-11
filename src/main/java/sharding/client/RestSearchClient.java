@@ -48,7 +48,8 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
 
         String response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), String.class).getBody();
         try {
-            return mapper.readValue(response, new TypeReference<Collection<DocumentUri>>() {});
+            return mapper.readValue(response, new TypeReference<Collection<DocumentUri>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptySet();
@@ -74,8 +75,24 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
 
     @Override
     public Map<List<String>, Collection<U>> searchNearestDocuments(T object) {
-        //TODO: implement
-        return Collections.emptyMap();
+        Objects.requireNonNull(object);
+        Objects.requireNonNull(object.getUri());
+        String tenantId = object.getUri().getTenantId();
+        Map<List<String>, Collection<U>> result = new HashMap<>();
+        for (String clusterNode : clusterNodes) {
+            String uri = String.format("http://%s/%s/search/nearest", clusterNode, tenantId);
+            Map<List<String>, Collection<U>> response = (Map<List<String>, Collection<U>>) restTemplate.postForEntity(uri, object, Map.class);
+            mergeMapWithColectionsResults(result, response);
+        }
+        return result;
+    }
+
+    private <A, B> void mergeMapWithColectionsResults(Map<A, Collection<B>> target, Map<A, Collection<B>> source) {
+        for (Map.Entry<A, Collection<B>> entry : source.entrySet()) {
+            target
+                    .computeIfAbsent(entry.getKey(), i -> new HashSet<>())
+                    .addAll(entry.getValue());
+        }
     }
 
     @Override
@@ -95,7 +112,8 @@ public class RestSearchClient<U extends AbstractObjectUri, T extends AbstractObj
 
         String response = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), String.class).getBody();
         try {
-            return mapper.readValue(response, new TypeReference<Collection<DocumentUri>>() {});
+            return mapper.readValue(response, new TypeReference<Collection<DocumentUri>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return null;
