@@ -38,14 +38,15 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     }
 
     @Override
-    public void addObjectToIndex(T object) {
-        searchService.addObjectToIndex(object);
+    public U addObjectToIndex(T object) {
+        U result = searchService.addObjectToIndex(object);
         localChanges.add(new Message(
                 System.currentTimeMillis(),
                 (Document) object,
                 "",
                 Message.MessageType.CREATE
         ));
+        return result;
     }
 
     @Override

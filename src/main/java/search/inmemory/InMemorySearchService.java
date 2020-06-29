@@ -52,7 +52,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public void addObjectToIndex(T object) {
+    public U addObjectToIndex(T object) {
         Objects.requireNonNull(object);
         U uri = (U) object.getUri();
         Map<String, String> attributes = object.getAttributes();
@@ -76,6 +76,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                     .computeIfAbsent(distanceEntry.getValue(), i -> new HashSet<>())
                     .add((U) object.getUri());
         }
+        return uri;
     }
 
     @Override

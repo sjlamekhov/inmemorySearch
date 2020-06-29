@@ -32,9 +32,9 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     }
 
     @Override
-    public void addObjectToIndex(T object) {
+    public U addObjectToIndex(T object) {
         searchCache.addToIndex(object);
-        searchService.addObjectToIndex(object);
+        return searchService.addObjectToIndex(object);
     }
 
     @Override
