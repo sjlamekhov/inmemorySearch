@@ -43,7 +43,7 @@ public class SearchController {
     public void indexDocument(
             @PathVariable("tenantId") String tenantId,
             @RequestBody Document document) {
-        searchService.addObjectToIndex(document);
+        searchService.addObjectToIndex(tenantId, document);
     }
 
     @RequestMapping(value = "/{tenantId}/search/remove/{documentId}",

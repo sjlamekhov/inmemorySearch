@@ -28,7 +28,7 @@ public class BaseSearchExecutionPlan {
     protected void initSearchService(SearchService<DocumentUri, Document> searchService) {
         Iterator<Document> dataIterator = getDataIterator();
         while (dataIterator.hasNext()) {
-            searchService.addObjectToIndex(dataIterator.next());
+            searchService.addObjectToIndex(tenantId, dataIterator.next());
         }
     }
 

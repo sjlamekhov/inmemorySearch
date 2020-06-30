@@ -96,7 +96,7 @@ public class ApplicationConfig {
                         return;
                     }
                     if (Message.MessageType.CREATE == message.getMessageType()) {
-                        platform.getSearchService().addObjectToIndex((Document) message.getObject());
+                        platform.getSearchService().addObjectToIndex(message.getObject().getUri().getTenantId(), (Document) message.getObject());
                     } else {
                         platform.getSearchService().removeObjectFromIndex((Document) message.getObject());
                     }

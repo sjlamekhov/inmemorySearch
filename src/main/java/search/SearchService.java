@@ -11,7 +11,7 @@ import java.util.Set;
 public interface SearchService<U extends AbstractObjectUri, T extends AbstractObject> {
 
     T getObjectByUri(U uri);
-    U addObjectToIndex(T object);
+    U addObjectToIndex(String tenantId, T object);
     void removeObjectFromIndex(T object);
     Map<Set<String>, Collection<U>> searchNearestDocuments(T object);
     Collection<U> search(String tenantId, SearchRequest searchRequest);

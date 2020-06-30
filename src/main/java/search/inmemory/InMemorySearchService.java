@@ -1,5 +1,6 @@
 package search.inmemory;
 
+import dao.UriGenerator;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import objects.Document;
@@ -24,6 +25,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     private final Map<U, Set<String>> reverseAttributeIndex;
     private final Map<Set<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
     private final DocumentToCoordinatesCalculator<T> documentToCoordinatesCalculator;
+    private final UriGenerator uriGenerator;
 
     public InMemorySearchService() {
         this.attributeIndexes = new HashMap<>();
@@ -31,6 +33,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         this.reverseAttributeIndex = new HashMap<>();
         this.objectDistanceIndexes = new HashMap<>();
         this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
+        this.uriGenerator = new UriGenerator();
     }
 
     @Override
@@ -52,8 +55,9 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public U addObjectToIndex(T object) {
+    public U addObjectToIndex(String tenantId, T object) {
         Objects.requireNonNull(object);
+        propagateUriForNewObject(object, tenantId);
         U uri = (U) object.getUri();
         Map<String, String> attributes = object.getAttributes();
         for (Map.Entry<String, String> attribute : attributes.entrySet()) {
@@ -74,9 +78,23 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             objectDistanceIndexes
                     .computeIfAbsent(distanceEntry.getKey(), i -> new TreeMap<>())
                     .computeIfAbsent(distanceEntry.getValue(), i -> new HashSet<>())
-                    .add((U) object.getUri());
+                    .add(uri);
         }
         return uri;
+    }
+
+    private void propagateUriForNewObject(T object, String tenantId) {
+        U uri = (U) object.getUri();
+        if (null == uri) {
+            try {
+                uri = (U) uri.getClass()
+                        .getDeclaredConstructor(String.class, String.class)
+                        .newInstance(uriGenerator.generateId(), tenantId);
+                object.setUri((DocumentUri) uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

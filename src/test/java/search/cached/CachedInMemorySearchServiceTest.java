@@ -36,7 +36,7 @@ public class CachedInMemorySearchServiceTest extends AbstractSearchServiceTest {
         Map<String, String> attributes1 = new HashMap<>();
         attributes1.put("attribute", "value");
         Document document1 = new Document(documentUri1, attributes1);
-        searchService.addObjectToIndex(document1);
+        searchService.addObjectToIndex(tenantId, document1);
 
         Assert.assertTrue(searchCache.getCachedRequests().isEmpty());
 

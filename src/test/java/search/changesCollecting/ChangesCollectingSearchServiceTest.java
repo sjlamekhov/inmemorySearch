@@ -31,7 +31,7 @@ public class ChangesCollectingSearchServiceTest extends AbstractSearchServiceTes
         attributes.put("attribute", "value");
         Document document = new Document(documentUri, attributes);
 
-        searchService.addObjectToIndex(document);
+        searchService.addObjectToIndex(tenantId, document);
         List<Message> extractedMessages = extractFromQueue(changes);
         Assert.assertEquals(1, extractedMessages.size());
         Assert.assertEquals(Message.MessageType.CREATE, extractedMessages.iterator().next().getMessageType());

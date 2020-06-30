@@ -5,6 +5,7 @@ import dao.UriGenerator;
 public abstract class AbstractObjectUri {
 
     protected String id;
+    protected boolean isNew;
     protected String tenantId;
 
     public AbstractObjectUri() {
@@ -12,16 +13,22 @@ public abstract class AbstractObjectUri {
 
     public AbstractObjectUri(String tenantId) {
         this.id = UriGenerator.generateId();
+        this.isNew = true;
         this.tenantId = tenantId;
     }
 
     public AbstractObjectUri(String id, String tenantId) {
         this.id = id;
+        this.isNew = false;
         this.tenantId = tenantId;
     }
 
     public String getId() {
         return id;
+    }
+
+    public boolean getIsNew() {
+        return isNew;
     }
 
     public String getTenantId() {

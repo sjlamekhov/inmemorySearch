@@ -38,8 +38,8 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     }
 
     @Override
-    public U addObjectToIndex(T object) {
-        U result = searchService.addObjectToIndex(object);
+    public U addObjectToIndex(String tenantId, T object) {
+        U result = searchService.addObjectToIndex(tenantId, object);
         localChanges.add(new Message(
                 System.currentTimeMillis(),
                 (Document) object,

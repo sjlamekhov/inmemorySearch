@@ -35,8 +35,8 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public U addObjectToIndex(T object) {
-        return searchService.addObjectToIndex(object);
+    public U addObjectToIndex(String tenantId, T object) {
+        return searchService.addObjectToIndex(tenantId, object);
     }
 
     @Override

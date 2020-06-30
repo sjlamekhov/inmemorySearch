@@ -40,7 +40,7 @@ public class ShardingSearchServiceTest extends AbstractSearchServiceTest {
         Document forShardingDocument = new Document(new DocumentUri(tenantId), attributes);
         Assert.assertNotEquals(localDocument.getUri(), forShardingDocument.getUri());
 
-        localSearchService.addObjectToIndex(localDocument);
+        localSearchService.addObjectToIndex(tenantId, localDocument);
         shardingServiceMock.addSearchRequestAndResult(searchRequest, forShardingDocument);
 
         Collection<DocumentUri> searchResult = searchService.search(tenantId, searchRequest);
