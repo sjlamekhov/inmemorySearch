@@ -85,7 +85,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
 
     private void propagateUriForNewObject(T object, String tenantId) {
         U uri = (U) object.getUri();
-        if (null == uri) {
+        if (null == uri || (uri.getIsNew() && null ==uri.getId())) {
             try {
                 uri = (U) uri.getClass()
                         .getDeclaredConstructor(String.class, String.class)

@@ -36,8 +36,8 @@ public class ShardingSearchServiceTest extends AbstractSearchServiceTest {
 
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute", "value");
-        Document localDocument = new Document(new DocumentUri(tenantId), attributes);
-        Document forShardingDocument = new Document(new DocumentUri(tenantId), attributes);
+        Document localDocument = new Document(new DocumentUri("localDocumentUri", tenantId), attributes);
+        Document forShardingDocument = new Document(new DocumentUri("forShardingDocumentUri", tenantId), attributes);
         Assert.assertNotEquals(localDocument.getUri(), forShardingDocument.getUri());
 
         localSearchService.addObjectToIndex(tenantId, localDocument);

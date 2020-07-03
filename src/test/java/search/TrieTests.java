@@ -18,13 +18,13 @@ public class TrieTests {
     public void addToTrieAndGet() {
         Trie<DocumentUri> trie = new Trie<>();
 
-        DocumentUri documentUriVal = new DocumentUri(tenantId);
+        DocumentUri documentUriVal = new DocumentUri("documentUriVal", tenantId);
         trie.addValueAndUri("val", documentUriVal);
 
-        DocumentUri documentUriValue = new DocumentUri(tenantId);
+        DocumentUri documentUriValue = new DocumentUri("documentUriValue", tenantId);
         trie.addValueAndUri("value", documentUriValue);
 
-        DocumentUri documentUriValhalla = new DocumentUri(tenantId);
+        DocumentUri documentUriValhalla = new DocumentUri("documentUriValhalla", tenantId);
         trie.addValueAndUri("valhalla", documentUriValhalla);
 
         Collection<DocumentUri> searchResult = trie.getUrisByStartsWith("");
@@ -54,10 +54,10 @@ public class TrieTests {
     public void wipeAndGet() {
         Trie<DocumentUri> trie = new Trie<>();
 
-        DocumentUri documentUriVal = new DocumentUri(tenantId);
+        DocumentUri documentUriVal = new DocumentUri("documentUriVal", tenantId);
         trie.addValueAndUri("val", documentUriVal);
 
-        DocumentUri documentUriValue = new DocumentUri(tenantId);
+        DocumentUri documentUriValue = new DocumentUri("documentUriValue", tenantId);
         trie.addValueAndUri("value", documentUriValue);
 
         //ended value

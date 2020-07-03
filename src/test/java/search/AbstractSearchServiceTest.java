@@ -31,13 +31,12 @@ public abstract class AbstractSearchServiceTest {
 
     @Test
     public void getByUriTest() {
-        DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute1", "attributeValue1");
         attributes.put("attribute2", "attributeValue2");
-        Document document = new Document(documentUri, attributes);
+        Document document = new Document(new DocumentUri(tenantId), attributes);
 
-        searchService.addObjectToIndex(tenantId, document);
+        DocumentUri documentUri = searchService.addObjectToIndex(tenantId, document);
         Document fetched = searchService.getObjectByUri(documentUri);
         Assert.assertNotNull(fetched);
         Assert.assertEquals(documentUri, fetched.getUri());
@@ -53,11 +52,10 @@ public abstract class AbstractSearchServiceTest {
         final int numberOfObjects = 16;
         Set<DocumentUri> uris = new HashSet<>();
         for (int i = 0; i < numberOfObjects; i++) {
-            DocumentUri documentUri = new DocumentUri(tenantId);
             Map<String, String> attributes = new HashMap<>();
             attributes.put("attribute", "value" + i);
-            Document document = new Document(documentUri, attributes);
-            searchService.addObjectToIndex(tenantId, document);
+            Document document = new Document(new DocumentUri(tenantId), attributes);
+            DocumentUri documentUri = searchService.addObjectToIndex(tenantId, document);
             uris.add(documentUri);
         }
 
@@ -73,23 +71,20 @@ public abstract class AbstractSearchServiceTest {
 
     @Test
     public void orEqRequest() {
-        DocumentUri documentUri1 = new DocumentUri(tenantId);
         Map<String, String> attributes1 = new HashMap<>();
         attributes1.put("attribute", "value1");
-        Document document1 = new Document(documentUri1, attributes1);
-        searchService.addObjectToIndex(tenantId, document1);
+        Document document1 = new Document(new DocumentUri(tenantId), attributes1);
+        DocumentUri documentUri1 = searchService.addObjectToIndex(tenantId, document1);
 
-        DocumentUri documentUri2 = new DocumentUri(tenantId);
         Map<String, String> attributes2 = new HashMap<>();
         attributes2.put("attribute", "value2");
-        Document document2 = new Document(documentUri2, attributes2);
-        searchService.addObjectToIndex(tenantId, document2);
+        Document document2 = new Document(new DocumentUri(tenantId), attributes2);
+        DocumentUri documentUri2 = searchService.addObjectToIndex(tenantId, document2);
 
-        DocumentUri documentUri3 = new DocumentUri(tenantId);
         Map<String, String> attributes3 = new HashMap<>();
         attributes3.put("attribute", "value3");
-        Document document3 = new Document(documentUri3, attributes3);
-        searchService.addObjectToIndex(tenantId, document3);
+        Document document3 = new Document(new DocumentUri(tenantId), attributes3);
+        DocumentUri documentUri3 = searchService.addObjectToIndex(tenantId, document3);
 
         final SearchRequest searchRequestInner = SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
@@ -148,11 +143,10 @@ public abstract class AbstractSearchServiceTest {
 
     @Test
     public void stwithSearch() {
-        DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute", "value");
-        Document document = new Document(documentUri, attributes);
-        searchService.addObjectToIndex(tenantId, document);
+        Document document = new Document(new DocumentUri(tenantId), attributes);
+        DocumentUri documentUri = searchService.addObjectToIndex(tenantId, document);
 
         Collection<DocumentUri> searchResult = searchService.search(tenantId, SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
@@ -354,11 +348,10 @@ public abstract class AbstractSearchServiceTest {
 
     @Test
     public void editDistanceTest() {
-        DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute", "value");
-        Document document = new Document(documentUri, attributes);
-        searchService.addObjectToIndex(tenantId, document);
+        Document document = new Document(new DocumentUri(tenantId), attributes);
+        DocumentUri documentUri = searchService.addObjectToIndex(tenantId, document);
 
         Collection<DocumentUri> result = searchService.search(tenantId, SearchRequest.Builder.newInstance()
                 .setAttributeToSearch("attribute")
@@ -389,13 +382,12 @@ public abstract class AbstractSearchServiceTest {
 
     @Test
     public void distanceTest() {
-        DocumentUri documentUri = new DocumentUri(tenantId);
         Map<String, String> attributes = new HashMap<>();
         attributes.put("attribute0", "value0");
         attributes.put("attribute1", "value1");
         attributes.put("attribute2", "value2");
-        Document document = new Document(documentUri, attributes);
-        searchService.addObjectToIndex(tenantId, document);
+        Document document = new Document(new DocumentUri(tenantId), attributes);
+        DocumentUri documentUri = searchService.addObjectToIndex(tenantId, document);
 
         Map<String, String> attributesForQuery = new HashMap<>();
         attributesForQuery.put("attribute0", "value0");

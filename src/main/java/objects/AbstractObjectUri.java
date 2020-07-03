@@ -12,7 +12,7 @@ public abstract class AbstractObjectUri {
     }
 
     public AbstractObjectUri(String tenantId) {
-        this.id = UriGenerator.generateId();
+        this.id = null;
         this.isNew = true;
         this.tenantId = tenantId;
     }
