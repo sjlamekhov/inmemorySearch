@@ -1,6 +1,7 @@
 package search;
 
 import configuration.ConfigurationService;
+import dao.UriGenerator;
 import objects.Document;
 import objects.DocumentUri;
 import search.cached.CachedSearchService;
@@ -18,9 +19,10 @@ public class SearchServiceFactory {
         boolean useSharding = configurationService.getOperationalMode() == ConfigurationService.OperationMode.sharding;
         CompositeSearch<DocumentUri, Document> compositeSearch = new CompositeSearch<>();
         for (String tenant : configurationService.getTenants()) {
+            UriGenerator uriGenerator = new UriGenerator(configurationService.getMaxUriLength());
             SearchService<DocumentUri, Document> innerSeachService = useCache ?
-                    new CachedSearchService<>(new InMemorySearchService<>())
-                    : new InMemorySearchService<>();
+                    new CachedSearchService<>(new InMemorySearchService<>(uriGenerator))
+                    : new InMemorySearchService<>(uriGenerator);
             if (useSharding) {
                 compositeSearch.addService(tenant, new ShardedSearchService<>(
                         innerSeachService,

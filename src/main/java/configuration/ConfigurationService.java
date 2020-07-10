@@ -16,6 +16,7 @@ public class ConfigurationService {
     private int maxSearchRequestSize;
     private OperationMode operationalMode;
     private boolean useCache;
+    private int maxUriLength;
 
     private ConfigurationService() {
     }
@@ -48,6 +49,10 @@ public class ConfigurationService {
         return useCache;
     }
 
+    public int getMaxUriLength() {
+        return maxUriLength;
+    }
+
     public static ConfigurationService buildConfigurationService(Properties properties) {
         ConfigurationService result = new ConfigurationService();
 
@@ -66,6 +71,8 @@ public class ConfigurationService {
         result.operationalMode = OperationMode.valueOf(properties.getProperty(ConfigurationPropertiesConstants.OPERATIONAL_MODE, ConfigurationPropertiesConstants.RELIABILITY));
 
         result.useCache = Boolean.valueOf(properties.getProperty(ConfigurationPropertiesConstants.USE_CACHE, "false"));
+
+        result.maxUriLength = Integer.valueOf(properties.getProperty(ConfigurationPropertiesConstants.MAX_URI_LENGTH, "12"));
 
         return result;
     }

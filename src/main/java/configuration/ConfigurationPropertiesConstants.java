@@ -13,4 +13,6 @@ public interface ConfigurationPropertiesConstants {
     String SHARDING = "sharding";
 
     String USE_CACHE = "useCache";
+
+    String MAX_URI_LENGTH = "maxUriLength";
 }

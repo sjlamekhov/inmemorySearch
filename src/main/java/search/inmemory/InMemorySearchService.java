@@ -1,5 +1,7 @@
 package search.inmemory;
 
+import dao.AbstractUriIterator;
+import dao.DocumentUriIterator;
 import dao.UriGenerator;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
@@ -25,6 +27,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     private final Map<U, Set<String>> reverseAttributeIndex;
     private final Map<Set<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
     private final DocumentToCoordinatesCalculator<T> documentToCoordinatesCalculator;
+    private final Map<String, AbstractUriIterator<U>> documentIteratorMap;
     private final UriGenerator uriGenerator;
 
     public InMemorySearchService() {
@@ -33,7 +36,18 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         this.reverseAttributeIndex = new HashMap<>();
         this.objectDistanceIndexes = new HashMap<>();
         this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
+        this.documentIteratorMap = new HashMap<>();
         this.uriGenerator = new UriGenerator();
+    }
+
+    public InMemorySearchService(UriGenerator uriGenerator) {
+        this.attributeIndexes = new HashMap<>();
+        this.attributePrefixIndexes = new HashMap<>();
+        this.reverseAttributeIndex = new HashMap<>();
+        this.objectDistanceIndexes = new HashMap<>();
+        this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
+        this.documentIteratorMap = new HashMap<>();
+        this.uriGenerator = uriGenerator;
     }
 
     @Override
@@ -277,6 +291,27 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
         return search(tenantId, searchRequest).size();
+    }
+
+    @Override
+    public AbstractUriIterator<U> getIterator(String tenantId, String cursorId) {
+        AbstractUriIterator<U> documentUriIterator;
+        Iterator<Map.Entry<String, AbstractUriIterator<U>>> iterator = documentIteratorMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            AbstractUriIterator<U> iteratorItem = iterator.next().getValue();
+            if (!iteratorItem.hasNext()) {
+                iterator.remove();
+            }
+        }
+        int lengthOfUri = uriGenerator.getLength();
+        if (null == cursorId) {
+            documentUriIterator = (AbstractUriIterator<U>) new DocumentUriIterator(tenantId, lengthOfUri);
+            documentUriIterator.setCursorId(uriGenerator.generateId());
+            documentIteratorMap.put(documentUriIterator.getCursorId(), documentUriIterator);
+        } else {
+            documentUriIterator = documentIteratorMap.get(cursorId);
+        }
+        return documentUriIterator;
     }
 
     @Override

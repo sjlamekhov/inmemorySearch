@@ -15,12 +15,16 @@ public class UriGenerator {
         this.length = length;
     }
 
-    public static String generateId() {
+    public String generateId() {
         StringBuilder stringBuilder = new StringBuilder();
-        while (stringBuilder.length() < DEFAULT_LENGTH) {
+        while (stringBuilder.length() < length) {
             stringBuilder.append(Integer.toHexString(RandomUtils.nextInt()));
         }
-        return stringBuilder.substring(0, DEFAULT_LENGTH);
+        return stringBuilder.substring(0, length);
+    }
+
+    public int getLength() {
+        return length;
     }
 
 }
