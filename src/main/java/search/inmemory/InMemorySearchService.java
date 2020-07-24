@@ -2,6 +2,7 @@ package search.inmemory;
 
 import dao.AbstractUriIterator;
 import dao.DocumentUriIterator;
+import dao.ExtractObjectsResult;
 import dao.UriGenerator;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
@@ -293,7 +294,6 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         return search(tenantId, searchRequest).size();
     }
 
-    @Override
     public AbstractUriIterator<U> getIterator(String tenantId, String cursorId) {
         AbstractUriIterator<U> documentUriIterator;
         Iterator<Map.Entry<String, AbstractUriIterator<U>>> iterator = documentIteratorMap.entrySet().iterator();
@@ -312,6 +312,22 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             documentUriIterator = documentIteratorMap.get(cursorId);
         }
         return documentUriIterator;
+    }
+
+    @Override
+    public ExtractObjectsResult<T> extractObjectsByIterator(String tenantId, String cursorId, int maxSize) {
+        AbstractUriIterator<U> uriIterator = getIterator(tenantId, cursorId);
+        if (null == uriIterator || !uriIterator.hasNext()) {
+            return new ExtractObjectsResult<>(cursorId, false, Collections.emptyList());
+        }
+        List<T> result = new ArrayList<>();
+        while (uriIterator.hasNext() && result.size() < maxSize) {
+            T object = getObjectByUri(uriIterator.next());
+            if (null != object) {
+                result.add(object);
+            }
+        }
+        return new ExtractObjectsResult<>(uriIterator.getCursorId(), uriIterator.hasNext(), result);
     }
 
     @Override

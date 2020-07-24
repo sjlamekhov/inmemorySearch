@@ -1,6 +1,7 @@
 package search;
 
 import dao.DocumentUriIterator;
+import dao.ExtractObjectsResult;
 import dao.UriGenerator;
 import objects.Document;
 import objects.DocumentUri;
@@ -11,7 +12,7 @@ import search.inmemory.InMemorySearchService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class IteratorTest {
+public class ExtractObjectsByIteratorTest {
 
     private final static String testTenantId = "testTenantId";
 
@@ -29,18 +30,14 @@ public class IteratorTest {
             Document document = new Document(new DocumentUri(testTenantId), attributes);
             documentUris.add(searchService.addObjectToIndex(testTenantId, document));
         }
-        DocumentUriIterator documentUriIterator = (DocumentUriIterator) searchService.getIterator(testTenantId, null);
-        Assert.assertNotNull(documentUriIterator.getCursorId());
-        List<Document> foundDocuments = new ArrayList<>();
-        while (documentUriIterator.hasNext()) {
-            DocumentUri documentUri = documentUriIterator.next();
-            Document document = searchService.getObjectByUri(documentUri);
-            if (null != document) {
-                foundDocuments.add(document);
-            }
+        Set<DocumentUri> extractedUris = new HashSet<>();
+        ExtractObjectsResult<Document> extractResult = searchService.extractObjectsByIterator(testTenantId, null, 8);
+        extractedUris.addAll(extractResult.getObjects().stream().map(Document::getUri).collect(Collectors.toSet()));
+        while (extractResult.isHasNext()) {
+            extractResult = searchService.extractObjectsByIterator(testTenantId, extractResult.getCursorId(), 8);
+            extractedUris.addAll(extractResult.getObjects().stream().map(Document::getUri).collect(Collectors.toSet()));
         }
-        Assert.assertEquals(documentCount, foundDocuments.size());
-        Assert.assertEquals(documentUris, foundDocuments.stream().map(Document::getUri).collect(Collectors.toSet()));
+        Assert.assertEquals(documentCount, extractedUris.size());
     }
 
 }

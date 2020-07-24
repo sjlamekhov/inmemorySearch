@@ -1,14 +1,11 @@
 package search;
 
-import dao.AbstractUriIterator;
+import dao.ExtractObjectsResult;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.request.SearchRequest;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface SearchService<U extends AbstractObjectUri, T extends AbstractObject> {
 
@@ -18,8 +15,8 @@ public interface SearchService<U extends AbstractObjectUri, T extends AbstractOb
     Map<Set<String>, Collection<U>> searchNearestDocuments(T object);
     Collection<U> search(String tenantId, SearchRequest searchRequest);
     long count(String tenantId, SearchRequest searchRequest);
-    default AbstractUriIterator<U> getIterator(String tenantId, String cursorId) {
-        return null;
+    default ExtractObjectsResult<T> extractObjectsByIterator(String tenantId, String cursorId, int maxSize) {
+        return new ExtractObjectsResult<>("", false, Collections.emptyList());
     }
     void dropIndexes(String tenantId);
     void close();
