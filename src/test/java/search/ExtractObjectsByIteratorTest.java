@@ -1,6 +1,5 @@
 package search;
 
-import dao.DocumentUriIterator;
 import dao.ExtractObjectsResult;
 import dao.UriGenerator;
 import objects.Document;
@@ -30,14 +29,14 @@ public class ExtractObjectsByIteratorTest {
             Document document = new Document(new DocumentUri(testTenantId), attributes);
             documentUris.add(searchService.addObjectToIndex(testTenantId, document));
         }
-        Set<DocumentUri> extractedUris = new HashSet<>();
         ExtractObjectsResult<Document> extractResult = searchService.extractObjectsByIterator(testTenantId, null, 8);
-        extractedUris.addAll(extractResult.getObjects().stream().map(Document::getUri).collect(Collectors.toSet()));
+        Set<DocumentUri> extractedUris = extractResult.getObjects().stream().map(Document::getUri).distinct().collect(Collectors.toSet());
         while (extractResult.isHasNext()) {
             extractResult = searchService.extractObjectsByIterator(testTenantId, extractResult.getCursorId(), 8);
             extractedUris.addAll(extractResult.getObjects().stream().map(Document::getUri).collect(Collectors.toSet()));
         }
         Assert.assertEquals(documentCount, extractedUris.size());
+        Assert.assertEquals(documentUris, extractedUris);
     }
 
 }
