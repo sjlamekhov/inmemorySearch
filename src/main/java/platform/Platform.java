@@ -6,6 +6,8 @@ import networking.GossipServiceMultiClient;
 import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import platform.dump.DumpService;
 import search.withChangesCollecting.ChangesCollectingSearchService;
 import search.request.SearchRequestLimitations;
 
@@ -18,6 +20,8 @@ public class Platform {
     private final GossipServiceMultiClient gossipServiceMultiClient;
     private final MessageConverter messageConverter;
     private final StatusService statusService;
+    private final DumpService dumpService;
+    private final ThreadPoolTaskExecutor executor;
 
     private Platform(
             ConfigurationService configurationService,
@@ -25,7 +29,10 @@ public class Platform {
             SearchRequestLimitations searchRequestLimitations,
             GossipServiceServer gossipServiceServer,
             GossipServiceMultiClient gossipServiceMultiClient,
-            MessageConverter messageConverter, StatusService statusService) {
+            MessageConverter messageConverter,
+            StatusService statusService,
+            DumpService dumpService,
+            ThreadPoolTaskExecutor executor) {
         this.configurationService = configurationService;
         this.searchService = searchService;
         this.searchRequestLimitations = searchRequestLimitations;
@@ -33,6 +40,8 @@ public class Platform {
         this.gossipServiceMultiClient = gossipServiceMultiClient;
         this.messageConverter = messageConverter;
         this.statusService = statusService;
+        this.dumpService = dumpService;
+        this.executor = executor;
     }
 
     public ConfigurationService getConfigurationService() {
@@ -63,6 +72,14 @@ public class Platform {
         return statusService;
     }
 
+    public DumpService getDumpService() {
+        return dumpService;
+    }
+
+    public ThreadPoolTaskExecutor getExecutor() {
+        return executor;
+    }
+
     public static class Builder {
         private ChangesCollectingSearchService<DocumentUri, Document> searchService;
         private SearchRequestLimitations searchRequestLimitations;
@@ -71,6 +88,8 @@ public class Platform {
         private MessageConverter messageConverter;
         private ConfigurationService configurationService;
         private StatusService statusService;
+        private DumpService dumpService;
+        private ThreadPoolTaskExecutor executor;
 
         protected Builder() {
         }
@@ -105,8 +124,18 @@ public class Platform {
             return this;
         }
 
-        public Builder setStatusServer(StatusService statusService) {
+        public Builder setStatusService(StatusService statusService) {
             this.statusService = statusService;
+            return this;
+        }
+
+        public Builder setDumpService(DumpService dumpService) {
+            this.dumpService = dumpService;
+            return this;
+        }
+
+        public Builder setExecutor(ThreadPoolTaskExecutor executor) {
+            this.executor = executor;
             return this;
         }
 
@@ -122,7 +151,9 @@ public class Platform {
                     gossipServiceServer,
                     gossipServiceMultiClient,
                     messageConverter,
-                    statusService
+                    statusService,
+                    dumpService,
+                    executor
             );
         }
     }

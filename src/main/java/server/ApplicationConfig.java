@@ -107,11 +107,7 @@ public class ApplicationConfig {
     @Bean(name = "taskExecutor")
     @DependsOn("networkDispatcher")
     public TaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(8);
-        executor.setMaxPoolSize(16);
-        executor.setQueueCapacity(24);
-        executor.initialize();
+        ThreadPoolTaskExecutor executor = platform.getExecutor();
         if (platform.getConfigurationService().getOperationalMode() == ConfigurationService.OperationMode.reliability) {
             executor.execute(() -> {
                 try {

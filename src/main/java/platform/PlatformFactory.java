@@ -7,6 +7,9 @@ import networking.GossipServiceMultiClient;
 import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import platform.dump.DumpService;
 import search.request.SearchRequestLimitations;
 import search.SearchServiceFactory;
 import search.withChangesCollecting.ChangesCollectingSearchService;
@@ -40,6 +43,12 @@ public class PlatformFactory {
                 configurationService.getMaxSearchRequestSize()
         );
 
+        ThreadPoolTaskExecutor executor =  new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(8);
+        executor.setMaxPoolSize(16);
+        executor.setQueueCapacity(24);
+        executor.initialize();
+
         return Platform.Builder.newInstance()
                 .setConfigurationService(configurationService)
                 .setGossipServiceServer(gossipServiceServer)
@@ -47,7 +56,9 @@ public class PlatformFactory {
                 .setSearchService(searchService)
                 .setSearchRequestLimitations(searchRequestLimitations)
                 .setMessageConverter(new DocumentMessageConverterJson())
-                .setStatusServer(new StatusService(gossipServiceServer, gossipServiceMultiClient))
+                .setStatusService(new StatusService(gossipServiceServer, gossipServiceMultiClient))
+                .setDumpService(new DumpService(executor))
+                .setExecutor(executor)
                 .build();
     }
 
