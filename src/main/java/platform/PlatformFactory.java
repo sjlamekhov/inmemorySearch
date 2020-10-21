@@ -57,7 +57,7 @@ public class PlatformFactory {
                 .setSearchRequestLimitations(searchRequestLimitations)
                 .setMessageConverter(new DocumentMessageConverterJson())
                 .setStatusService(new StatusService(gossipServiceServer, gossipServiceMultiClient))
-                .setDumpService(new DumpService(executor))
+                .setDumpService(new DumpService<>(executor, searchService))
                 .setExecutor(executor)
                 .build();
     }

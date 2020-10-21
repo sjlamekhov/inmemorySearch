@@ -15,6 +15,7 @@ import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -321,13 +322,25 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             return new ExtractObjectsResult<>(cursorId, false, Collections.emptyList());
         }
         List<T> result = new ArrayList<>();
-        while (uriIterator.hasNext() && result.size() < maxSize) {
+        while (uriIterator.hasNext() && (maxSize == -1 || result.size() < maxSize)) {
             T object = getObjectByUri(uriIterator.next());
             if (null != object) {
                 result.add(object);
             }
         }
         return new ExtractObjectsResult<>(uriIterator.getCursorId(), uriIterator.hasNext(), result);
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, Consumer<T> consumer) {
+        AbstractUriIterator<U> uriIterator = getIterator(tenantId, cursorId);
+        int extractedCount = 0;
+        while (uriIterator.hasNext() && (maxSize == -1 || extractedCount++ < maxSize)) {
+            T object = getObjectByUri(uriIterator.next());
+            if (null != object) {
+                consumer.accept(object);
+            }
+        }
     }
 
     @Override

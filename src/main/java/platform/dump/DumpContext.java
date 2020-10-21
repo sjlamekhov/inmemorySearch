@@ -1,22 +1,44 @@
 package platform.dump;
 
-import com.google.common.collect.AbstractIterator;
 import objects.AbstractObject;
 
 import java.util.function.Consumer;
 
-public class DumpContext {
+public class DumpContext <T extends AbstractObject> {
 
-    AbstractIterator<AbstractObject> abstractIterator;
-    Long timestampOfStart;
-    Consumer<AbstractObject> objectConsumer;
+    private final String dumpProcessId;
+    private Consumer<T> objectConsumer;
+    private boolean isFinished = false;
+    private Long timestampOfStart, timestampOfFinish;
 
     public DumpContext(
-            AbstractIterator<AbstractObject> abstractIterator,
+            String dumpProcessId,
             Long timestampOfStart,
-            Consumer<AbstractObject> objectConsumer) {
-        this.abstractIterator = abstractIterator;
+            Consumer<T> objectConsumer) {
+        this.dumpProcessId = dumpProcessId;
         this.timestampOfStart = timestampOfStart;
         this.objectConsumer = objectConsumer;
     }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public Long getTimestampOfStart() {
+        return timestampOfStart;
+    }
+
+    public Long getTimestampOfFinish() {
+        return timestampOfFinish;
+    }
+
+    public String getDumpProcessId() {
+        return dumpProcessId;
+    }
+
+    public void finish() {
+        isFinished = true;
+        timestampOfFinish = System.currentTimeMillis();
+    }
+
 }
