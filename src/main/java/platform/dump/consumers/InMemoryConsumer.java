@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class InMemoryConsumer implements Consumer<AbstractObject> {
+public class InMemoryConsumer<T extends AbstractObject> extends AbstractObjectConsumer<T> {
 
-    List<AbstractObject> buffer;
+    List<T> buffer;
 
-    public InMemoryConsumer(List<AbstractObject> buffer) {
+    public InMemoryConsumer(List<T> buffer) {
         this.buffer = buffer;
     }
 
     @Override
-    public void accept(AbstractObject abstractObject) {
-        buffer.add(abstractObject);
+    public void accept(T object) {
+        buffer.add(object);
     }
 
 }

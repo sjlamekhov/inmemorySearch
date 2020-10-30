@@ -8,6 +8,7 @@ import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import objects.Document;
 import objects.DocumentUri;
+import platform.dump.consumers.AbstractObjectConsumer;
 import search.ConditionType;
 import search.closestTo.DocumentToCoordinatesCalculator;
 import search.editDistance.EditGenerator;
@@ -332,13 +333,14 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, Consumer<T> consumer) {
+    public void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
         AbstractUriIterator<U> uriIterator = getIterator(tenantId, cursorId);
         int extractedCount = 0;
-        while (uriIterator.hasNext() && (maxSize == -1 || extractedCount++ < maxSize)) {
+        while (uriIterator.hasNext() && (maxSize == -1 || extractedCount < maxSize)) {
             T object = getObjectByUri(uriIterator.next());
             if (null != object) {
                 consumer.accept(object);
+                extractedCount++;
             }
         }
     }

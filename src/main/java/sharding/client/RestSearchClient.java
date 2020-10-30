@@ -2,18 +2,14 @@ package sharding.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import networking.Message;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import objects.Document;
 import objects.DocumentUri;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-import search.ConditionType;
 import search.request.SearchRequest;
 import search.request.SearchRequestConverter;
 import search.request.SearchRequestStringConverter;

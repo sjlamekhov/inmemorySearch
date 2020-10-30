@@ -3,6 +3,7 @@ package platform.dump;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import org.springframework.core.task.TaskExecutor;
+import platform.dump.consumers.AbstractObjectConsumer;
 import search.SearchService;
 
 import java.util.*;
@@ -21,7 +22,7 @@ public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> 
         this.searchService = searchService;
     }
 
-    public DumpContext<T> addAndStartNewTask(String tenantId, int maxSize, Consumer<T> consumer) {
+    public DumpContext<T> addAndStartNewTask(String tenantId, int maxSize, AbstractObjectConsumer consumer) {
         String dumpProcessId = UUID.randomUUID().toString();
         DumpContext<T> dumpContext = new DumpContext<>(dumpProcessId, System.currentTimeMillis(), consumer);
         dumpContexts.put(dumpProcessId, dumpContext);

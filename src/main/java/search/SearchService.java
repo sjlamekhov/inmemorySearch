@@ -3,6 +3,7 @@ package search;
 import dao.ExtractObjectsResult;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
+import platform.dump.consumers.AbstractObjectConsumer;
 import search.request.SearchRequest;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public interface SearchService<U extends AbstractObjectUri, T extends AbstractOb
         return new ExtractObjectsResult<>("", false, Collections.emptyList());
     }
 
-    default void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, Consumer<T> consumer) {
+    default void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
     }
 
     void dropIndexes(String tenantId);
