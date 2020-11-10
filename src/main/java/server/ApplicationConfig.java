@@ -2,6 +2,7 @@ package server;
 
 import configuration.ConfigProvider;
 import configuration.ConfigurationService;
+import dump.DumpService;
 import networking.Message;
 import networking.NetworkDispatcher;
 import networking.GossipServiceMultiClient;
@@ -78,6 +79,12 @@ public class ApplicationConfig {
     @DependsOn("platform")
     public StatusService getStatusService() {
         return platform.getStatusService();
+    }
+
+    @Bean(name = "dumpService")
+    @DependsOn("platform")
+    public DumpService getDumpService() {
+        return platform.getDumpService();
     }
 
     @Bean(name = "networkDispatcher")

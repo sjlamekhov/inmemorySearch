@@ -1,4 +1,4 @@
-package platform.dump.consumers;
+package dump.consumers;
 
 import objects.AbstractObject;
 

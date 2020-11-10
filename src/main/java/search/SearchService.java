@@ -3,11 +3,10 @@ package search;
 import dao.ExtractObjectsResult;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import platform.dump.consumers.AbstractObjectConsumer;
+import dump.consumers.AbstractObjectConsumer;
 import search.request.SearchRequest;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public interface SearchService<U extends AbstractObjectUri, T extends AbstractObject> {
 

@@ -1,10 +1,8 @@
-package platform.dump.consumers;
+package dump.consumers;
 
 import objects.AbstractObject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class InMemoryConsumer<T extends AbstractObject> extends AbstractObjectConsumer<T> {
 

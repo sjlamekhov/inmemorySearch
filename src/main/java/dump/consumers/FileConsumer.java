@@ -1,4 +1,4 @@
-package platform.dump.consumers;
+package dump.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import objects.AbstractObject;

@@ -1,4 +1,4 @@
-package platform.dump;
+package dump;
 
 import dao.UriGenerator;
 import objects.Document;
@@ -7,15 +7,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import platform.dump.consumers.InMemoryConsumer;
+import dump.consumers.AbstractObjectConsumer;
+import dump.consumers.FileConsumer;
 import search.inmemory.InMemorySearchService;
+import utils.TestFileUtils;
 import utils.TestUtils;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-public class DumpServiceTestInMemory {
+public class DumpServiceTestFile {
 
     private final static String testTenantId = "testTenantId";
     private final static int uriLength = 4;
@@ -42,6 +42,7 @@ public class DumpServiceTestInMemory {
 
     @Test
     public void testLimitedNumber() throws InterruptedException {
+        String fileName = "./DumpServiceTestFile_testLimitedNumber.out";
         //prepare data
         Set<DocumentUri> documentUris = new HashSet<>();
         for (int i = 0; i < documentCount; i++) {
@@ -51,19 +52,22 @@ public class DumpServiceTestInMemory {
             documentUris.add(searchService.addObjectToIndex(testTenantId, document));
         }
         // dump of entities
-        List<Document> accumulator = new ArrayList<>();
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, documentCount / 2, new InMemoryConsumer<>(accumulator));
+        AbstractObjectConsumer fileObjectConsumer = new FileConsumer(fileName);
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, documentCount / 2, fileObjectConsumer);
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 
         TestUtils.waitFor(() -> dumpService.getContextByDumpProcessId(dumpProcessId).isFinished(), 1024);
-        Assert.assertEquals(documentCount / 2, accumulator.size());
-        Assert.assertTrue(documentUris.containsAll(accumulator.stream()
-                .map(Document::getUri).collect(Collectors.toSet())));
+        Assert.assertTrue(TestFileUtils.isFileExist(fileName));
+        List<String> fromFile = TestFileUtils.readLinesFromFile(fileName);
+        TestFileUtils.deleteFile(fileName);
+
+        Assert.assertEquals(documentCount / 2, fromFile.size());
     }
 
     @Test
     public void testUnLimitedNumber() throws InterruptedException {
+        String fileName = "./DumpServiceTestFile_testUnLimitedNumber.out";
         //prepare data
         Set<DocumentUri> documentUris = new HashSet<>();
         for (int i = 0; i < documentCount; i++) {
@@ -73,16 +77,17 @@ public class DumpServiceTestInMemory {
             documentUris.add(searchService.addObjectToIndex(testTenantId, document));
         }
         // dump of entities
-        List<Document> accumulator = new ArrayList<>();
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, -1, new InMemoryConsumer<>(accumulator));
+        AbstractObjectConsumer fileObjectConsumer = new FileConsumer(fileName);
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, -1, fileObjectConsumer);
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 
         TestUtils.waitFor(() -> dumpService.getContextByDumpProcessId(dumpProcessId).isFinished(), 1024);
-        Assert.assertEquals(documentCount, accumulator.size());
-        Assert.assertTrue(accumulator.stream()
-                .map(Document::getUri).collect(Collectors.toSet())
-                .containsAll(documentUris));
+        Assert.assertTrue(TestFileUtils.isFileExist(fileName));
+        List<String> fromFile = TestFileUtils.readLinesFromFile(fileName);
+        TestFileUtils.deleteFile(fileName);
+
+        Assert.assertEquals(documentCount, fromFile.size());
     }
 
 }

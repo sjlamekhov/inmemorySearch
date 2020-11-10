@@ -7,7 +7,7 @@ import networking.GossipServiceServer;
 import objects.Document;
 import objects.DocumentUri;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import platform.dump.DumpService;
+import dump.DumpService;
 import search.withChangesCollecting.ChangesCollectingSearchService;
 import search.request.SearchRequestLimitations;
 

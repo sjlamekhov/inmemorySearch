@@ -1,9 +1,7 @@
-package platform.dump;
+package dump;
 
 import objects.AbstractObject;
-import platform.dump.consumers.AbstractObjectConsumer;
-
-import java.util.function.Consumer;
+import dump.consumers.AbstractObjectConsumer;
 
 public class DumpContext <T extends AbstractObject> {
 

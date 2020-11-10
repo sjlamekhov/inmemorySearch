@@ -8,7 +8,7 @@ import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import objects.Document;
 import objects.DocumentUri;
-import platform.dump.consumers.AbstractObjectConsumer;
+import dump.consumers.AbstractObjectConsumer;
 import search.ConditionType;
 import search.closestTo.DocumentToCoordinatesCalculator;
 import search.editDistance.EditGenerator;
@@ -16,7 +16,6 @@ import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
