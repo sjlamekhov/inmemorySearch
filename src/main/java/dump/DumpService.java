@@ -2,7 +2,6 @@ package dump;
 
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
-import org.springframework.core.task.TaskExecutor;
 import dump.consumers.AbstractObjectConsumer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import search.SearchService;
@@ -16,7 +15,7 @@ import static dump.DumpServiceConstants.POOL_SIZE;
 public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> {
 
     //dumpProcessId -> DumpContext
-    Map<String, DumpContext<T>> dumpContexts;
+    Map<String, DumpContext> dumpContexts;
     ThreadPoolTaskExecutor taskExecutor;
     private final SearchService<U, T> searchService;
 
@@ -26,9 +25,9 @@ public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> 
         this.searchService = searchService;
     }
 
-    public DumpContext<T> addAndStartNewTask(String tenantId, int maxSize, AbstractObjectConsumer consumer) {
+    public DumpContext addAndStartNewTask(String tenantId, int maxSize, AbstractObjectConsumer consumer) {
         String dumpProcessId = UUID.randomUUID().toString();
-        DumpContext<T> dumpContext = new DumpContext<>(dumpProcessId, System.currentTimeMillis(), consumer);
+        DumpContext dumpContext = new DumpContext(dumpProcessId, System.currentTimeMillis(), consumer);
         dumpContexts.put(dumpProcessId, dumpContext);
         taskExecutor.execute(() -> {
             searchService.extractObjectsByIterator(tenantId, null, maxSize, consumer);
@@ -37,7 +36,7 @@ public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> 
         return dumpContext;
     }
 
-    public DumpContext<T> getContextByDumpProcessId(String dumpProcessId) {
+    public DumpContext getContextByDumpProcessId(String dumpProcessId) {
         return dumpContexts.get(dumpProcessId);
     }
 
@@ -52,8 +51,8 @@ public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> 
         return result;
     }
 
-    public DumpContext<T> deleteContextById(String dumpProcessId) {
-        DumpContext<T> beforeDeletion = dumpContexts.get(dumpProcessId);
+    public DumpContext deleteContextById(String dumpProcessId) {
+        DumpContext beforeDeletion = dumpContexts.get(dumpProcessId);
         if (null == beforeDeletion) {
             return null;
         }

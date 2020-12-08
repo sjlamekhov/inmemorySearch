@@ -1,9 +1,8 @@
 package dump;
 
-import objects.AbstractObject;
 import dump.consumers.AbstractObjectConsumer;
 
-public class DumpContext <T extends AbstractObject> {
+public class DumpContext {
 
     private final String dumpProcessId;
     private AbstractObjectConsumer objectConsumer;
