@@ -10,12 +10,14 @@ import objects.Document;
 import objects.DocumentUri;
 import dump.consumers.AbstractObjectConsumer;
 import search.ConditionType;
+import search.cached.ApplianceChecker;
 import search.closestTo.DocumentToCoordinatesCalculator;
 import search.editDistance.EditGenerator;
 import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -333,11 +335,25 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
 
     @Override
     public void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        extractObjectsByIteratorInternal(tenantId, i -> true, cursorId, maxSize, consumer);
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        ApplianceChecker applianceChecker = new ApplianceChecker();
+        extractObjectsByIteratorInternal(tenantId, object -> applianceChecker.test(searchRequest, object), cursorId, maxSize, consumer);
+    }
+
+    private void extractObjectsByIteratorInternal(String tenantId,
+                                                  Predicate<AbstractObject> checker,
+                                                  String cursorId,
+                                                  int maxSize,
+                                                  AbstractObjectConsumer consumer) {
         AbstractUriIterator<U> uriIterator = getIterator(tenantId, cursorId);
         int extractedCount = 0;
         while (uriIterator.hasNext() && (maxSize == -1 || extractedCount < maxSize)) {
             T object = getObjectByUri(uriIterator.next());
-            if (null != object) {
+            if (null != object && checker.test(object)) {
                 consumer.accept(object);
                 extractedCount++;
             }

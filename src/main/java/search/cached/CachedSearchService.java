@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+//TODO: implement cache coherence mechanism between nodes
 public class CachedSearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final SearchService<U, T> searchService;
