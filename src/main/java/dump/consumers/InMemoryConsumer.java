@@ -12,6 +12,10 @@ public class InMemoryConsumer<T extends AbstractObject> extends AbstractObjectCo
         this.buffer = buffer;
     }
 
+    public List<T> getBuffer() {
+        return buffer;
+    }
+
     @Override
     public void accept(T object) {
         buffer.add(object);

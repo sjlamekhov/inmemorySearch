@@ -334,11 +334,6 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     @Override
-    public void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
-        extractObjectsByIteratorInternal(tenantId, i -> true, cursorId, maxSize, consumer);
-    }
-
-    @Override
     public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
         ApplianceChecker applianceChecker = new ApplianceChecker();
         extractObjectsByIteratorInternal(tenantId, object -> applianceChecker.test(searchRequest, object), cursorId, maxSize, consumer);

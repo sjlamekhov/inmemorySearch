@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import dump.consumers.InMemoryConsumer;
 import search.inmemory.InMemorySearchService;
+import search.request.SearchRequest;
 import utils.TestUtils;
 
 import java.util.*;
@@ -51,7 +52,10 @@ public class DumpServiceTestInMemory {
         }
         // dump of entities
         List<Document> accumulator = new ArrayList<>();
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, documentCount / 2, new InMemoryConsumer<>(accumulator));
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId,
+                null,
+                documentCount / 2,
+                new InMemoryConsumer<>(accumulator));
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 
@@ -73,7 +77,7 @@ public class DumpServiceTestInMemory {
         }
         // dump of entities
         List<Document> accumulator = new ArrayList<>();
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, -1, new InMemoryConsumer<>(accumulator));
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, null, -1, new InMemoryConsumer<>(accumulator));
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 

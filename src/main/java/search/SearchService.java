@@ -26,11 +26,7 @@ public interface SearchService<U extends AbstractObjectUri, T extends AbstractOb
         return new ExtractObjectsResult<>("", false, Collections.emptyList());
     }
 
-    default void extractObjectsByIterator(String tenantId, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
-    }
-
-    default void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
-    }
+    void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer);
 
     void dropIndexes(String tenantId);
 

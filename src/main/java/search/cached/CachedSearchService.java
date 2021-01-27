@@ -1,5 +1,6 @@
 package search.cached;
 
+import dump.consumers.AbstractObjectConsumer;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.optimizer.SearchRequestOptimizer;
@@ -57,6 +58,11 @@ public class CachedSearchService<U extends AbstractObjectUri, T extends Abstract
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
         return searchCache.getCached(searchRequest).size();
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        searchService.extractObjectsByIterator(tenantId, searchRequest, cursorId, maxSize, consumer);
     }
 
     @Override

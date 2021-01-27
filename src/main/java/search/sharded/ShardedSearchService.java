@@ -1,5 +1,6 @@
 package search.sharded;
 
+import dump.consumers.AbstractObjectConsumer;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.SearchService;
@@ -68,6 +69,11 @@ public class ShardedSearchService <U extends AbstractObjectUri, T extends Abstra
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
         return search(tenantId, searchRequest).size();
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        searchService.extractObjectsByIterator(tenantId, searchRequest, cursorId, maxSize, consumer);
     }
 
     @Override

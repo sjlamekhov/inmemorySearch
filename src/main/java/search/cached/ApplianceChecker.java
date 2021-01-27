@@ -31,7 +31,9 @@ public class ApplianceChecker implements BiPredicate<SearchRequest, AbstractObje
 
     @Override
     public boolean test(SearchRequest searchRequest, AbstractObject object) {
-        Objects.requireNonNull(searchRequest);
+        if (null == searchRequest) {
+            return true;
+        }
         boolean mainRequestResult = testLeaf(searchRequest, object);
         Set<SearchRequest> andRequests = searchRequest.getAndRequests();
         Set<SearchRequest> orRequests = searchRequest.getOrRequests();

@@ -2,7 +2,6 @@ package search;
 
 import dao.ExtractObjectsResult;
 import dao.UriGenerator;
-import dump.consumers.AbstractObjectConsumer;
 import dump.consumers.InMemoryConsumer;
 import objects.Document;
 import objects.DocumentUri;

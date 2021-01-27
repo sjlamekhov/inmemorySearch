@@ -1,5 +1,6 @@
 package search.withChangesCollecting;
 
+import dump.consumers.AbstractObjectConsumer;
 import networking.Message;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
@@ -68,6 +69,11 @@ public class ChangesCollectingSearchService<U extends AbstractObjectUri, T exten
     @Override
     public Collection<U> search(String tenantId, SearchRequest searchRequest) {
         return searchService.search(tenantId, searchRequest);
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        searchService.extractObjectsByIterator(tenantId, searchRequest, cursorId, maxSize, consumer);
     }
 
     @Override

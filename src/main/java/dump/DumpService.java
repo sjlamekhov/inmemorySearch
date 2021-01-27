@@ -5,6 +5,7 @@ import objects.AbstractObjectUri;
 import dump.consumers.AbstractObjectConsumer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import search.SearchService;
+import search.request.SearchRequest;
 
 import java.util.*;
 
@@ -25,12 +26,12 @@ public class DumpService<U extends AbstractObjectUri, T extends AbstractObject> 
         this.searchService = searchService;
     }
 
-    public DumpContext addAndStartNewTask(String tenantId, int maxSize, AbstractObjectConsumer consumer) {
+    public DumpContext addAndStartNewTask(String tenantId, SearchRequest searchRequest, int maxSize, AbstractObjectConsumer consumer) {
         String dumpProcessId = UUID.randomUUID().toString();
         DumpContext dumpContext = new DumpContext(dumpProcessId, System.currentTimeMillis(), consumer);
         dumpContexts.put(dumpProcessId, dumpContext);
         taskExecutor.execute(() -> {
-            searchService.extractObjectsByIterator(tenantId, null, maxSize, consumer);
+            searchService.extractObjectsByIterator(tenantId, searchRequest,null, maxSize, consumer);
             dumpContext.finish();
         });
         return dumpContext;

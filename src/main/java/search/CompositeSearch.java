@@ -1,5 +1,6 @@
 package search;
 
+import dump.consumers.AbstractObjectConsumer;
 import objects.AbstractObject;
 import objects.AbstractObjectUri;
 import search.request.SearchRequest;
@@ -55,6 +56,11 @@ public class CompositeSearch<U extends AbstractObjectUri, T extends AbstractObje
     @Override
     public long count(String tenantId, SearchRequest searchRequest) {
         return getSearchServiceInternal(tenantId).count(tenantId, searchRequest);
+    }
+
+    @Override
+    public void extractObjectsByIterator(String tenantId, SearchRequest searchRequest, String cursorId, int maxSize, AbstractObjectConsumer consumer) {
+        getSearchServiceInternal(tenantId).extractObjectsByIterator(tenantId, searchRequest, cursorId, maxSize, consumer);
     }
 
     @Override

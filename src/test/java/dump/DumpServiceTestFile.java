@@ -53,7 +53,7 @@ public class DumpServiceTestFile {
         }
         // dump of entities
         AbstractObjectConsumer fileObjectConsumer = new FileConsumer(fileName);
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, documentCount / 2, fileObjectConsumer);
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, null, documentCount / 2, fileObjectConsumer);
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 
@@ -78,7 +78,7 @@ public class DumpServiceTestFile {
         }
         // dump of entities
         AbstractObjectConsumer fileObjectConsumer = new FileConsumer(fileName);
-        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, -1, fileObjectConsumer);
+        DumpContext dumpContext = dumpService.addAndStartNewTask(testTenantId, null, -1, fileObjectConsumer);
         Assert.assertNotNull(dumpContext);
         String dumpProcessId = dumpContext.getDumpProcessId();
 

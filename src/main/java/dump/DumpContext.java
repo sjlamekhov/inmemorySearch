@@ -34,6 +34,10 @@ public class DumpContext {
         return dumpProcessId;
     }
 
+    public AbstractObjectConsumer getObjectConsumer() {
+        return objectConsumer;
+    }
+
     public void finish() {
         isFinished = true;
         timestampOfFinish = System.currentTimeMillis();
