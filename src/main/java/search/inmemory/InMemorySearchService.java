@@ -13,11 +13,13 @@ import search.ConditionType;
 import search.cached.ApplianceChecker;
 import search.closestTo.DocumentToCoordinatesCalculator;
 import search.editDistance.EditGenerator;
+import search.inmemory.byAttributePrefix.SearchIndexByAttributePrefix;
+import search.inmemory.byAttributePrefix.SearchIndexByAttributePrefixImpl;
+import search.inmemory.byAttributePrefix.Trie;
 import search.request.SearchRequest;
 import search.SearchService;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,8 @@ import static search.SearchServiceUtils.combineAnd;
 public class InMemorySearchService<U extends AbstractObjectUri, T extends AbstractObject> implements SearchService<U, T> {
 
     private final Map<String, TreeMap<String, Set<U>>> attributeIndexes;
-    private final Map<String, Trie<U>> attributePrefixIndexes;
+//    private final Map<String, Trie<U>> attributePrefixIndexes;
+    private final SearchIndexByAttributePrefix<U, T> searchIndexByAttributePrefix;
     private final Map<U, Set<String>> reverseAttributeIndex;
     private final Map<Set<String>, TreeMap<Long, Set<U>>> objectDistanceIndexes;
     private final DocumentToCoordinatesCalculator<T> documentToCoordinatesCalculator;
@@ -35,19 +38,25 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     private final UriGenerator uriGenerator;
 
     public InMemorySearchService() {
+        //move to attribute value index
         this.attributeIndexes = new HashMap<>();
-        this.attributePrefixIndexes = new HashMap<>();
         this.reverseAttributeIndex = new HashMap<>();
+        //move to attribute prefix index
+//        this.attributePrefixIndexes = new HashMap<>();
+        this.searchIndexByAttributePrefix = new SearchIndexByAttributePrefixImpl<>();
+        //move to distance index
         this.objectDistanceIndexes = new HashMap<>();
         this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
+
         this.documentIteratorMap = new HashMap<>();
         this.uriGenerator = new UriGenerator();
     }
 
     public InMemorySearchService(UriGenerator uriGenerator) {
         this.attributeIndexes = new HashMap<>();
-        this.attributePrefixIndexes = new HashMap<>();
         this.reverseAttributeIndex = new HashMap<>();
+//        this.attributePrefixIndexes = new HashMap<>();
+        this.searchIndexByAttributePrefix = new SearchIndexByAttributePrefixImpl<>();
         this.objectDistanceIndexes = new HashMap<>();
         this.documentToCoordinatesCalculator = new DocumentToCoordinatesCalculator<>();
         this.documentIteratorMap = new HashMap<>();
@@ -78,15 +87,12 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         propagateUriForNewObject(object, tenantId);
         U uri = (U) object.getUri();
         Map<String, String> attributes = object.getAttributes();
+        searchIndexByAttributePrefix.indexObject(object);
         for (Map.Entry<String, String> attribute : attributes.entrySet()) {
             attributeIndexes
                     .computeIfAbsent(attribute.getKey(), i -> new TreeMap<>())
                     .computeIfAbsent(attribute.getValue(), i -> new HashSet<>())
                     .add(uri);
-            String value = attribute.getValue().toLowerCase();
-            attributePrefixIndexes
-                    .computeIfAbsent(attribute.getKey(), i -> new Trie<>())
-                    .addValueAndUri(value, uri);
             reverseAttributeIndex.computeIfAbsent(uri, i -> new HashSet<>()).add(attribute.getKey());
         }
         Map<Set<String>, Long> attributesAndDistances = documentToCoordinatesCalculator.combineAttributesAndCoordinates(
@@ -98,6 +104,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                     .computeIfAbsent(distanceEntry.getValue(), i -> new HashSet<>())
                     .add(uri);
         }
+        //TODO: add support of postfix array for CONTAINS requests
         return uri;
     }
 
@@ -120,6 +127,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         Objects.requireNonNull(object);
         U uri = (U) object.getUri();
         Set<String> attributeNamesToWipe = reverseAttributeIndex.get(uri);
+        searchIndexByAttributePrefix.removeObjectFromIndex(attributeNamesToWipe, uri);
         for (String attributeName : attributeNamesToWipe) {
             Map<String, Set<U>> attributeIndex = attributeIndexes.get(attributeName);
             if (attributeIndex == null) {
@@ -133,14 +141,10 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
                     entryIterator.remove();
                 }
             }
-            Trie<U> trie = attributePrefixIndexes.get(attributeName);
-            if (trie == null) {
-                continue;
-            }
-            trie.removeUriFromTrie(uri);
         }
         reverseAttributeIndex.remove(uri);
         //TODO: add deleting from objectDistanceIndexes
+        //TODO: add deleting from postfix arrays
     }
 
     @Override
@@ -213,7 +217,8 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
         }
 
         if (ConditionType.STWITH == conditionType) {
-            return searchByStartsWith(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
+            return searchIndexByAttributePrefix
+                    .searchByPrefix(searchRequest.getAttributeToSearch(), searchRequest.getValueToSearch());
         }
 
         if (ConditionType.LENGTH == conditionType) {
@@ -261,6 +266,7 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
     }
 
     private Set<U> searchByContains(String attributeToSearch, String valueToSearch) {
+        //TODO: implement using suffix array
         return searchByPredicate(attributeToSearch, i -> i.contains(valueToSearch));
     }
 
@@ -281,15 +287,6 @@ public class InMemorySearchService<U extends AbstractObjectUri, T extends Abstra
             }
         }
         return result;
-    }
-
-    private Set<U> searchByStartsWith(String field, String prefix) {
-        Trie<U> prefixSearchIndex = attributePrefixIndexes.get(field);
-        if (null == prefixSearchIndex || prefixSearchIndex.getMaxLength() + 1 < prefix.length()) {
-            return Collections.emptySet();
-        }
-        prefix = prefix.toLowerCase();
-        return new HashSet<>(prefixSearchIndex.getUrisByStartsWith(prefix));
     }
 
     @Override

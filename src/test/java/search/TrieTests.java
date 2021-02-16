@@ -3,12 +3,11 @@ package search;
 import objects.DocumentUri;
 import org.junit.Assert;
 import org.junit.Test;
-import search.inmemory.Trie;
+import search.inmemory.byAttributePrefix.Trie;
 
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public class TrieTests {
 

@@ -1,4 +1,4 @@
-package search.inmemory;
+package search.inmemory.byAttributePrefix;
 
 import objects.AbstractObjectUri;
 
