@@ -11,4 +11,12 @@ public interface SearchIndexByAttributeValue<U extends AbstractObjectUri, T exte
 
     Set<U> search(SearchRequest searchRequest);
 
+    Set<U> searchByLength(String attributeToSearch, int lengthToSearch);
+
+    Set<U> searchByContains(String attributeToSearch, String valueToSearch);
+
+    Set<U> searchByDistance(String attributeToSearch, String valueToSearch);
+
+    T getObjectByUri(U uri);
+
 }

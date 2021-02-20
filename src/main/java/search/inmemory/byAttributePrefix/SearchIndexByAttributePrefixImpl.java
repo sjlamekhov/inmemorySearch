@@ -37,14 +37,16 @@ public class SearchIndexByAttributePrefixImpl<U extends AbstractObjectUri, T ext
     }
 
     @Override
-    public void removeObjectFromIndex(Set<String> attributeNamesToWipe, U uri) {
-        for (String attributeName : attributeNamesToWipe) {
-            Trie<U> trie = storage.get(attributeName);
-            if (trie == null) {
-                continue;
-            }
-            trie.removeUriFromTrie(uri);
+    public void removeObjectFromIndex(U uri) {
+        //TODO: add reverseAttributeIndex
+        for (Map.Entry<String, Trie<U>> storageEntry : storage.entrySet()) {
+            storageEntry.getValue().removeUriFromTrie(uri);
         }
+    }
+
+    @Override
+    public void dropIndexes() {
+        storage.clear();
     }
 
 }
